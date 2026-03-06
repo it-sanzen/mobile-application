@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/localization/app_localizations.dart';
 
 class NotificationsPage extends StatefulWidget {
   const NotificationsPage({super.key});
@@ -82,8 +83,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
           icon: const Icon(Icons.arrow_back_ios, size: 20, color: AppColors.black),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Notifications',
+        title: Text(
+          AppLocalizations.of(context).notifications,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -100,8 +101,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
                 }
               });
             },
-            child: const Text(
-              'Mark all read',
+            child: Text(
+              AppLocalizations.of(context).markAllRead,
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
@@ -116,14 +117,14 @@ class _NotificationsPageState extends State<NotificationsPage> {
         children: [
           // Today section
           if (_todayNotifications.isNotEmpty) ...[
-            _buildSectionHeader('Today'),
+            _buildSectionHeader(AppLocalizations.of(context).todayLabel),
             const SizedBox(height: 10),
             ..._todayNotifications.map((n) => _buildNotificationCard(n)),
           ],
           // Earlier section
           if (_earlierNotifications.isNotEmpty) ...[
             const SizedBox(height: 24),
-            _buildSectionHeader('Earlier'),
+            _buildSectionHeader(AppLocalizations.of(context).earlierLabel),
             const SizedBox(height: 10),
             ..._earlierNotifications.map((n) => _buildNotificationCard(n)),
           ],

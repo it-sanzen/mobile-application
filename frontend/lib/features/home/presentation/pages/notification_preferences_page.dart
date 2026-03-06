@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/localization/app_localizations.dart';
 
 class NotificationPreferencesPage extends StatefulWidget {
   const NotificationPreferencesPage({super.key});
@@ -19,6 +20,7 @@ class _NotificationPreferencesPageState extends State<NotificationPreferencesPag
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
@@ -28,8 +30,8 @@ class _NotificationPreferencesPageState extends State<NotificationPreferencesPag
           icon: const Icon(Icons.arrow_back_ios, color: AppColors.darkGrey, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Notification Preferences',
+        title: Text(
+          l10n.notificationPreferences,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
@@ -45,15 +47,15 @@ class _NotificationPreferencesPageState extends State<NotificationPreferencesPag
           children: [
             // Notification types section
             _buildSectionCard(
-              title: 'Notification Types',
+              title: l10n.notificationTypes,
               child: Column(
                 children: [
                   _buildToggleRow(
                     icon: Icons.apartment,
                     iconColor: AppColors.primaryGreen,
                     iconBgColor: const Color(0xFFE8F5E9),
-                    title: 'Unit Updates',
-                    subtitle: 'Construction progress & unit info',
+                    title: l10n.unitUpdates,
+                    subtitle: l10n.constructionProgressInfo,
                     value: _unitUpdates,
                     onChanged: (v) => setState(() => _unitUpdates = v),
                   ),
@@ -62,8 +64,8 @@ class _NotificationPreferencesPageState extends State<NotificationPreferencesPag
                     icon: Icons.campaign_outlined,
                     iconColor: AppColors.info,
                     iconBgColor: const Color(0xFFE3F2FD),
-                    title: 'Company News',
-                    subtitle: 'Latest announcements & events',
+                    title: l10n.companyNews,
+                    subtitle: l10n.latestAnnouncements,
                     value: _companyNews,
                     onChanged: (v) => setState(() => _companyNews = v),
                   ),
@@ -72,8 +74,8 @@ class _NotificationPreferencesPageState extends State<NotificationPreferencesPag
                     icon: Icons.payment_outlined,
                     iconColor: AppColors.gold,
                     iconBgColor: const Color(0xFFFFF8E1),
-                    title: 'Payment Reminders',
-                    subtitle: 'Upcoming & overdue payment alerts',
+                    title: l10n.paymentReminders,
+                    subtitle: l10n.upcomingOverdue,
                     value: _paymentReminders,
                     onChanged: (v) => setState(() => _paymentReminders = v),
                   ),
@@ -82,8 +84,8 @@ class _NotificationPreferencesPageState extends State<NotificationPreferencesPag
                     icon: Icons.flag_outlined,
                     iconColor: const Color(0xFF9C27B0),
                     iconBgColor: const Color(0xFFF3E5F5),
-                    title: 'Construction Milestones',
-                    subtitle: 'Phase completion notifications',
+                    title: l10n.constructionMilestones,
+                    subtitle: l10n.phaseCompletion,
                     value: _constructionMilestones,
                     onChanged: (v) => setState(() => _constructionMilestones = v),
                   ),
@@ -92,8 +94,8 @@ class _NotificationPreferencesPageState extends State<NotificationPreferencesPag
                     icon: Icons.local_offer_outlined,
                     iconColor: const Color(0xFFE65100),
                     iconBgColor: const Color(0xFFFFF3E0),
-                    title: 'Promotions & Offers',
-                    subtitle: 'Exclusive add-ons & seasonal offers',
+                    title: l10n.promotionsOffers,
+                    subtitle: l10n.exclusiveSeasonal,
                     value: _promotions,
                     onChanged: (v) => setState(() => _promotions = v),
                   ),
@@ -104,15 +106,15 @@ class _NotificationPreferencesPageState extends State<NotificationPreferencesPag
 
             // Delivery channels section
             _buildSectionCard(
-              title: 'Delivery Channels',
+              title: l10n.deliveryChannels,
               child: Column(
                 children: [
                   _buildToggleRow(
                     icon: Icons.email_outlined,
                     iconColor: AppColors.primaryGreen,
                     iconBgColor: const Color(0xFFE8F5E9),
-                    title: 'Email Notifications',
-                    subtitle: 'Receive updates via email',
+                    title: l10n.emailNotifications,
+                    subtitle: l10n.receiveViaEmail,
                     value: _emailNotifications,
                     onChanged: (v) => setState(() => _emailNotifications = v),
                   ),
@@ -121,8 +123,8 @@ class _NotificationPreferencesPageState extends State<NotificationPreferencesPag
                     icon: Icons.phone_iphone,
                     iconColor: AppColors.info,
                     iconBgColor: const Color(0xFFE3F2FD),
-                    title: 'Push Notifications',
-                    subtitle: 'Receive push alerts on your device',
+                    title: l10n.pushNotifications,
+                    subtitle: l10n.receivePushAlerts,
                     value: _pushNotifications,
                     onChanged: (v) => setState(() => _pushNotifications = v),
                   ),

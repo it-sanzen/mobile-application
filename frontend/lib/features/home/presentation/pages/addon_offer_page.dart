@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/localization/app_localizations.dart';
 
 class AddonOfferPage extends StatelessWidget {
   final String title;
@@ -15,8 +16,8 @@ class AddonOfferPage extends StatelessWidget {
     required this.gradientColors,
   });
 
-  @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       body: CustomScrollView(
@@ -84,7 +85,7 @@ class AddonOfferPage extends StatelessWidget {
                 children: [
                   // Description card
                   _buildSectionCard(
-                    title: 'About This Add-on',
+                    title: l10n.aboutAddon,
                     child: Text(
                       description,
                       style: TextStyle(
@@ -98,14 +99,14 @@ class AddonOfferPage extends StatelessWidget {
 
                   // Pricing card
                   _buildSectionCard(
-                    title: 'Pricing',
+                    title: l10n.pricing,
                     child: Column(
                       children: [
-                        _buildPriceRow('Base Package', 'AED 45,000'),
+                        _buildPriceRow(l10n.basePackage, 'AED 45,000'),
                         _buildDivider(),
-                        _buildPriceRow('Premium Package', 'AED 85,000'),
+                        _buildPriceRow(l10n.premiumPackage, 'AED 85,000'),
                         _buildDivider(),
-                        _buildPriceRow('Custom Package', 'Get Quote'),
+                        _buildPriceRow(l10n.customPackage, l10n.getQuote),
                       ],
                     ),
                   ),
@@ -113,14 +114,14 @@ class AddonOfferPage extends StatelessWidget {
 
                   // Features card
                   _buildSectionCard(
-                    title: 'What\'s Included',
+                    title: l10n.whatsIncluded,
                     child: Column(
                       children: [
-                        _buildFeatureItem('Professional installation by certified experts'),
-                        _buildFeatureItem('Premium quality materials and components'),
-                        _buildFeatureItem('2-year comprehensive warranty'),
-                        _buildFeatureItem('24/7 after-sales support'),
-                        _buildFeatureItem('Free maintenance for the first year'),
+                        _buildFeatureItem(l10n.feature1),
+                        _buildFeatureItem(l10n.feature2),
+                        _buildFeatureItem(l10n.feature3),
+                        _buildFeatureItem(l10n.feature4),
+                        _buildFeatureItem(l10n.feature5),
                       ],
                     ),
                   ),
@@ -134,7 +135,7 @@ class AddonOfferPage extends StatelessWidget {
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: const Text('Request sent! Our team will contact you shortly.'),
+                            content: Text(l10n.requestSent),
                             backgroundColor: AppColors.primaryGreen,
                             behavior: SnackBarBehavior.floating,
                             shape: RoundedRectangleBorder(
@@ -165,7 +166,7 @@ class AddonOfferPage extends StatelessWidget {
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: const Text('Callback scheduled! We\'ll reach out soon.'),
+                            content: Text(l10n.callbackScheduled),
                             backgroundColor: AppColors.primaryGreen,
                             behavior: SnackBarBehavior.floating,
                             shape: RoundedRectangleBorder(

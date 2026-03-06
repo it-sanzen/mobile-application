@@ -51,6 +51,12 @@ dependencies:
   shimmer: ^3.0.0
   flutter_svg: ^2.2.3
   http: ^1.2.0
+  url_launcher: ^6.3.1
+  flutter_localizations:
+    sdk: flutter
+  pdf: ^3.11.3
+  printing: ^5.14.2
+  path_provider: ^2.1.5
 
 dev_dependencies:
   flutter_test:
@@ -91,9 +97,6 @@ flutter:
   # Assets for the application
   assets:
     - assets/images/
-    - assets/fonts/
-    - assets/icons/
-    - assets/animations/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/services/auth_service.dart';
+import '../../../../core/services/token_service.dart';
 import '../../../home/presentation/pages/home_page.dart';
+import 'sign_up_page.dart';
+import 'forgot_password_page.dart';
+import '../../../../core/localization/app_localizations.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -19,6 +24,8 @@ class _SignInPageState extends State<SignInPage> {
   bool _rememberMe = true;
   bool _emailHasFocus = false;
   bool _passwordHasFocus = false;
+  bool _isLoading = false;
+  String _errorMessage = '';
 
   @override
   void initState() {
@@ -40,17 +47,92 @@ class _SignInPageState extends State<SignInPage> {
     super.dispose();
   }
 
-  void _handleSignIn() {
-    // Dummy login — just navigate to HomePage
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (_) => const HomePage()),
-      (route) => false,
+  void _handleSignIn() async {
+    final l10n = AppLocalizations.of(context);
+    print('SIGN IN BUTTON CLICKED');
+    print('Email: "${_emailController.text}"');
+    print('Password length: ${_passwordController.text.length}');
+    
+    if (!_formKey.currentState!.validate() || _emailController.text.isEmpty || _passwordController.text.isEmpty) {
+      print('Validation failed or fields are empty');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter an email and password')),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    print('Calling AuthService.signIn...');
+    final result = await AuthService.signIn(
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
     );
+    print('AuthService.signIn returned: $result');
+
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+        if (!result['success']) {
+          _errorMessage = result['error'] ?? 'Sign in failed';
+        } else {
+          _errorMessage = ''; // Clear error on success
+        }
+      });
+
+      if (result['success']) {
+        try {
+          final userData = result['data']['user'];
+          
+          // Debug prints
+          print("DEBUG USER DATA: $userData");
+          print("DEBUG TOKEN: ${result['data']['token']}");
+          
+          String accessToken = "";
+          if (result['data']['token'] is String) {
+            accessToken = result['data']['token'];
+          } else if (result['data']['token'] is Map) {
+            accessToken = result['data']['token']['accessToken'] ?? '';
+          }
+
+          await TokenService.saveAuthData(
+            token: accessToken,
+            userId: userData['id']?.toString() ?? '',
+            name: userData['name']?.toString() ?? '',
+            email: userData['email']?.toString() ?? '',
+            phone: userData['phone']?.toString(),
+            address: userData['address']?.toString(),
+            unit: userData['unit']?.toString(),
+            createdAt: userData['createdAt']?.toString(),
+          );
+
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (_) => const HomePage()),
+            (route) => false,
+          );
+        } catch (e) {
+          print("Parse Error during Sign In: $e");
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error parsing login data: $e'),
+              backgroundColor: AppColors.error,
+            ),
+          );
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result['error'] ?? l10n.signInFailed),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    }
   }
 
-  @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.white,
       body: SafeArea(
@@ -70,9 +152,9 @@ class _SignInPageState extends State<SignInPage> {
                   ),
                   const SizedBox(height: 50),
                   // Welcome Back
-                  const Text(
-                    'Welcome Back',
-                    style: TextStyle(
+                  Text(
+                    l10n.welcomeBack,
+                    style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w600,
                       color: AppColors.primaryGreen,
@@ -83,7 +165,7 @@ class _SignInPageState extends State<SignInPage> {
                   _buildTextField(
                     controller: _emailController,
                     focusNode: _emailFocusNode,
-                    hintText: 'Email',
+                    hintText: l10n.emailLabel,
                     hasFocus: _emailHasFocus,
                     prefixIcon: Icons.email_outlined,
                     keyboardType: TextInputType.emailAddress,
@@ -95,7 +177,7 @@ class _SignInPageState extends State<SignInPage> {
                   _buildTextField(
                     controller: _passwordController,
                     focusNode: _passwordFocusNode,
-                    hintText: 'Password',
+                    hintText: l10n.passwordHint,
                     hasFocus: _passwordHasFocus,
                     prefixIcon: Icons.more_horiz,
                     isPassword: true,
@@ -133,9 +215,9 @@ class _SignInPageState extends State<SignInPage> {
                             ),
                           ),
                           const SizedBox(width: 8),
-                          const Text(
-                            'Remember me',
-                            style: TextStyle(
+                          Text(
+                            l10n.rememberMe,
+                            style: const TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w400,
                               color: AppColors.darkGrey,
@@ -146,11 +228,16 @@ class _SignInPageState extends State<SignInPage> {
                       // Forgot Password
                       GestureDetector(
                         onTap: () {
-                          // No action for dummy app
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const ForgotPasswordPage(),
+                            ),
+                          );
                         },
-                        child: const Text(
-                          'Forgot Password?',
-                          style: TextStyle(
+                        child: Text(
+                          l10n.forgotPassword,
+                          style: const TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w500,
                             color: AppColors.primaryGreen,
@@ -161,27 +248,22 @@ class _SignInPageState extends State<SignInPage> {
                       ),
                     ],
                   ),
+                  if (_errorMessage.isNotEmpty) ...[
+                    const SizedBox(height: 16),
+                    Text(
+                      _errorMessage,
+                      style: const TextStyle(
+                        color: AppColors.error,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 32),
                   // Sign In Button
-                  _buildSignInButton(),
+                  _buildSignInButton(context),
                   const SizedBox(height: 30),
-                  // Divider with "OR"
-                  _buildDivider(),
-                  const SizedBox(height: 30),
-                  // Google Button
-                  _buildSocialButton(
-                    iconAsset: 'assets/images/Group 2043686813.png',
-                    label: 'Continue with Google',
-                    onPressed: _handleSignIn,
-                  ),
-                  const SizedBox(height: 14),
-                  // Facebook Button
-                  _buildSocialButton(
-                    iconAsset: 'assets/images/Group 2043686815.png',
-                    label: 'Continue with Facebook',
-                    onPressed: _handleSignIn,
-                  ),
-                  const SizedBox(height: 40),
+
+
                 ],
               ),
             ),
@@ -263,7 +345,8 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 
-  Widget _buildSignInButton() {
+  Widget _buildSignInButton(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return SizedBox(
       width: double.infinity,
       height: 50,
@@ -273,7 +356,7 @@ class _SignInPageState extends State<SignInPage> {
           borderRadius: BorderRadius.circular(25),
         ),
         child: ElevatedButton(
-          onPressed: _handleSignIn,
+          onPressed: _isLoading ? null : _handleSignIn,
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.transparent,
             shadowColor: Colors.transparent,
@@ -281,85 +364,24 @@ class _SignInPageState extends State<SignInPage> {
               borderRadius: BorderRadius.circular(25),
             ),
           ),
-          child: const Text(
-            'Sign in',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: AppColors.white,
-            ),
-          ),
+          child: _isLoading 
+            ? const SizedBox(
+                height: 20, 
+                width: 20, 
+                child: CircularProgressIndicator(color: AppColors.white, strokeWidth: 2)
+              )
+              : Text(
+                  l10n.signIn,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.white,
+                  ),
+                ),
         ),
       ),
     );
   }
 
-  Widget _buildDivider() {
-    return Row(
-      children: [
-        Expanded(
-          child: Container(
-            height: 1,
-            color: AppColors.lightGrey,
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: Text(
-            'OR',
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.grey,
-            ),
-          ),
-        ),
-        Expanded(
-          child: Container(
-            height: 1,
-            color: AppColors.lightGrey,
-          ),
-        ),
-      ],
-    );
-  }
 
-  Widget _buildSocialButton({
-    required String iconAsset,
-    required String label,
-    required VoidCallback onPressed,
-  }) {
-    return SizedBox(
-      width: double.infinity,
-      height: 50,
-      child: OutlinedButton(
-        onPressed: onPressed,
-        style: OutlinedButton.styleFrom(
-          backgroundColor: AppColors.white,
-          side: const BorderSide(color: AppColors.lightGrey),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(25),
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(
-              iconAsset,
-              width: 20,
-              height: 20,
-            ),
-            const SizedBox(width: 12),
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: AppColors.darkGrey,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }

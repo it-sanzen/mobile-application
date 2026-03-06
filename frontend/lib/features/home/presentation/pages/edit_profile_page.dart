@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/services/token_service.dart';
+import '../../../../core/services/auth_service.dart';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});
@@ -9,10 +12,108 @@ class EditProfilePage extends StatefulWidget {
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
-  final _nameController = TextEditingController(text: 'James Anderson');
-  final _emailController = TextEditingController(text: 'james.anderson@email.com');
-  final _phoneController = TextEditingController(text: '+971 50 123 4567');
-  final _addressController = TextEditingController(text: 'Dubai Marina, Dubai, UAE');
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _addressController = TextEditingController();
+  
+  String _userInitials = '';
+  String _userUnit = '';
+  bool _isLoading = true;
+  bool _isSaving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final userData = await TokenService.getUserData();
+    if (mounted) {
+      setState(() {
+        _nameController.text = userData['name'] ?? '';
+        _emailController.text = userData['email'] ?? '';
+        _phoneController.text = userData['phone'] ?? '';
+        _addressController.text = userData['address'] ?? '';
+        _userUnit = userData['unit'] ?? '';
+        
+        final name = userData['name'] ?? '';
+        if (name.isNotEmpty) {
+          final parts = name.split(' ');
+          if (parts.length > 1) {
+            _userInitials = '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+          } else {
+            _userInitials = name.substring(0, name.length > 1 ? 2 : 1).toUpperCase();
+          }
+        }
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _saveChanges() async {
+    if (_nameController.text.isEmpty) return;
+
+    setState(() => _isSaving = true);
+
+    try {
+      final response = await AuthService.updateProfile(
+        name: _nameController.text.trim(),
+        phone: _phoneController.text.trim(),
+        address: _addressController.text.trim(),
+        unit: _userUnit, // Keep existing unit
+      );
+
+      if (response['success'] == true) {
+        final userData = response['data']['user'];
+
+        if (userData != null) {
+        // Retrieve current token/email to reuse
+        final currentData = await TokenService.getUserData();
+        
+        await TokenService.saveAuthData(
+          token: currentData['token'] ?? '', // Token doesn't change
+          userId: userData['id']?.toString() ?? currentData['id'] ?? '',
+          name: userData['name']?.toString() ?? '',
+          email: userData['email']?.toString() ?? currentData['email'] ?? '',
+          phone: userData['phone']?.toString(),
+          address: userData['address']?.toString(),
+          unit: userData['unit']?.toString(),
+          createdAt: userData['createdAt']?.toString() ?? currentData['createdAt'],
+        );
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context).profileUpdated),
+              backgroundColor: AppColors.primaryGreen,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+          );
+          Navigator.pop(context, true); // Return true to signal a refresh
+        }
+      }
+      } else {
+        throw Exception(response['error'] ?? AppLocalizations.of(context).failedUpdateProfile);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString().replaceAll('Exception: ', '')),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -34,8 +135,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
           icon: const Icon(Icons.arrow_back_ios, color: AppColors.darkGrey, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Edit Profile',
+        title: Text(
+          AppLocalizations.of(context).editProfile,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
@@ -44,8 +145,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
         ),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
+      body: _isLoading 
+          ? const Center(child: CircularProgressIndicator(color: AppColors.primaryGreen))
+          : SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
         child: Column(
           children: [
             // Avatar
@@ -60,10 +163,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       color: const Color(0xFFE8F0EA),
                       border: Border.all(color: const Color(0xFFD5E0D8), width: 2),
                     ),
-                    child: const Center(
+                    child: Center(
                       child: Text(
-                        'JA',
-                        style: TextStyle(
+                        _userInitials,
+                        style: const TextStyle(
                           fontSize: 30,
                           fontWeight: FontWeight.w700,
                           color: AppColors.primaryDark,
@@ -91,13 +194,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
             const SizedBox(height: 32),
 
             // Form fields
-            _buildTextField('Full Name', _nameController, Icons.person_outline),
+            _buildTextField(AppLocalizations.of(context).fullName, _nameController, Icons.person_outline),
             const SizedBox(height: 16),
-            _buildTextField('Email Address', _emailController, Icons.email_outlined),
+            _buildTextField(AppLocalizations.of(context).emailAddress, _emailController, Icons.email_outlined),
             const SizedBox(height: 16),
-            _buildTextField('Phone Number', _phoneController, Icons.phone_outlined),
+            _buildTextField(AppLocalizations.of(context).phoneNumber, _phoneController, Icons.phone_outlined),
             const SizedBox(height: 16),
-            _buildTextField('Address', _addressController, Icons.location_on_outlined),
+            _buildTextField(AppLocalizations.of(context).address, _addressController, Icons.location_on_outlined),
             const SizedBox(height: 32),
 
             // Save button
@@ -105,27 +208,26 @@ class _EditProfilePageState extends State<EditProfilePage> {
               width: double.infinity,
               height: 52,
               child: ElevatedButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: const Text('Profile updated successfully!'),
-                      backgroundColor: AppColors.primaryGreen,
-                      behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                    ),
-                  );
-                  Navigator.pop(context);
-                },
+                onPressed: _isSaving ? null : _saveChanges,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryGreen,
                   foregroundColor: AppColors.white,
                   elevation: 0,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 ),
-                child: const Text(
-                  'Save Changes',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-                ),
+                child: _isSaving
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          color: AppColors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : Text(
+                        AppLocalizations.of(context).saveChanges,
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                      ),
               ),
             ),
           ],

@@ -50,8 +50,32 @@ class AuthService {
   }) async {
     return await ApiService.post('/auth/reset-password', {
       'email': email,
-      'otp': otp,
+      'token': otp,
+      'password': newPassword,
+    });
+  }
+
+  static Future<Map<String, dynamic>> changePassword({
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+    return await ApiService.post('/auth/change-password', {
+      'currentPassword': oldPassword,
       'newPassword': newPassword,
+    });
+  }
+
+  static Future<Map<String, dynamic>> updateProfile({
+    String? name,
+    String? phone,
+    String? address,
+    String? unit,
+  }) async {
+    return await ApiService.put('/auth/profile', {
+      if (name != null) 'name': name,
+      if (phone != null) 'phone': phone,
+      if (address != null) 'address': address,
+      if (unit != null) 'unit': unit,
     });
   }
 }

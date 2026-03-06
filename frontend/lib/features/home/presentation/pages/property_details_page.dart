@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/localization/app_localizations.dart';
 
 class PropertyDetailsPage extends StatelessWidget {
   final String propertyName;
@@ -27,8 +28,8 @@ class PropertyDetailsPage extends StatelessWidget {
     required this.imageAsset,
   });
 
-  @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       body: CustomScrollView(
@@ -131,29 +132,29 @@ class PropertyDetailsPage extends StatelessWidget {
                   // Specs row
                   Row(
                     children: [
-                      _buildSpecCard(Icons.home_outlined, 'Type', type),
+                      _buildSpecCard(Icons.home_outlined, l10n.typeLabel, type),
                       const SizedBox(width: 10),
-                      _buildSpecCard(Icons.bed_outlined, 'Bedrooms', bedrooms),
+                      _buildSpecCard(Icons.bed_outlined, l10n.bedroomsLabel, bedrooms),
                       const SizedBox(width: 10),
-                      _buildSpecCard(Icons.square_foot, 'Area', area),
+                      _buildSpecCard(Icons.square_foot, l10n.areaLabel, area),
                     ],
                   ),
                   const SizedBox(height: 16),
 
                   // Unit details card
                   _buildSectionCard(
-                    title: 'Unit Details',
+                    title: l10n.unitDetails,
                     child: Column(
                       children: [
-                        _buildDetailRow('Unit Code', unitCode),
+                        _buildDetailRow(l10n.unitCode, unitCode),
                         _buildCardDivider(),
-                        _buildDetailRow('Floor', '2nd Floor'),
+                        _buildDetailRow(l10n.floor, l10n.secondFloor),
                         _buildCardDivider(),
-                        _buildDetailRow('Parking', '2 Covered Spaces'),
+                        _buildDetailRow(l10n.parking, l10n.twoCoveredSpaces),
                         _buildCardDivider(),
-                        _buildDetailRow('Balcony', 'Yes — Lake View'),
+                        _buildDetailRow(l10n.balcony, l10n.lakeView),
                         _buildCardDivider(),
-                        _buildDetailRow('Furnished', 'Semi-Furnished'),
+                        _buildDetailRow(l10n.furnished, l10n.semiFurnished),
                       ],
                     ),
                   ),
@@ -197,9 +198,9 @@ class PropertyDetailsPage extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 16),
-                          _buildDetailRow('Current Phase', 'Structure'),
+                          _buildDetailRow(l10n.currentPhase, l10n.structure),
                           _buildCardDivider(),
-                          _buildDetailRow('Est. Completion', 'Dec 2024'),
+                          _buildDetailRow(l10n.estCompletionDate, 'Dec 2024'),
                         ],
                       ),
                     ),
@@ -208,14 +209,14 @@ class PropertyDetailsPage extends StatelessWidget {
 
                   // Payment plan card
                   _buildSectionCard(
-                    title: 'Payment Plan',
+                    title: l10n.paymentPlan,
                     child: Column(
                       children: [
-                        _buildPaymentRow('Down Payment', '20%', true),
+                        _buildPaymentRow(l10n.downPayment, '20%', true),
                         _buildCardDivider(),
-                        _buildPaymentRow('During Construction', '50%', progress != null && progress! < 1.0),
+                        _buildPaymentRow(l10n.duringConstruction, '50%', progress != null && progress! < 1.0),
                         _buildCardDivider(),
-                        _buildPaymentRow('On Handover', '30%', false),
+                        _buildPaymentRow(l10n.onHandover, '30%', false),
                       ],
                     ),
                   ),
@@ -223,19 +224,19 @@ class PropertyDetailsPage extends StatelessWidget {
 
                   // Amenities card
                   _buildSectionCard(
-                    title: 'Amenities',
+                    title: l10n.amenities,
                     child: Wrap(
                       spacing: 10,
                       runSpacing: 10,
                       children: [
-                        _buildAmenityChip(Icons.pool, 'Pool'),
-                        _buildAmenityChip(Icons.fitness_center, 'Gym'),
-                        _buildAmenityChip(Icons.local_parking, 'Parking'),
-                        _buildAmenityChip(Icons.security, 'Security'),
-                        _buildAmenityChip(Icons.park, 'Garden'),
-                        _buildAmenityChip(Icons.child_care, 'Kids Area'),
-                        _buildAmenityChip(Icons.spa, 'Spa'),
-                        _buildAmenityChip(Icons.restaurant, 'BBQ Area'),
+                        _buildAmenityChip(Icons.pool, l10n.poolLabel),
+                        _buildAmenityChip(Icons.fitness_center, l10n.gymLabel),
+                        _buildAmenityChip(Icons.local_parking, l10n.parking),
+                        _buildAmenityChip(Icons.security, l10n.security),
+                        _buildAmenityChip(Icons.park, l10n.gardenLabel),
+                        _buildAmenityChip(Icons.child_care, l10n.kidsArea),
+                        _buildAmenityChip(Icons.spa, l10n.spaLabel),
+                        _buildAmenityChip(Icons.restaurant, l10n.bbqArea),
                       ],
                     ),
                   ),
@@ -249,7 +250,7 @@ class PropertyDetailsPage extends StatelessWidget {
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: const Text('Your property manager will contact you shortly.'),
+                            content: Text(l10n.managerWillContact),
                             backgroundColor: AppColors.primaryGreen,
                             behavior: SnackBarBehavior.floating,
                             shape: RoundedRectangleBorder(
@@ -259,8 +260,8 @@ class PropertyDetailsPage extends StatelessWidget {
                         );
                       },
                       icon: const Icon(Icons.headset_mic_outlined, size: 20),
-                      label: const Text(
-                        'Contact Property Manager',
+                      label: Text(
+                        l10n.contactPropertyManager,
                         style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                       ),
                       style: ElevatedButton.styleFrom(

@@ -211,27 +211,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   // Sign Up Button
                   _buildSignUpButton(),
                   const SizedBox(height: 40),
-                  // Divider with "Or Sign up with"
-                  _buildDivider(),
-                  const SizedBox(height: 32),
-                  // Google Button
-                  _buildSocialButton(
-                    iconAsset: 'assets/images/Group 2043686813.png',
-                    label: 'Sign up with Google',
-                    onPressed: () {
-                      // TODO: Implement Google sign up
-                    },
-                  ),
-                  const SizedBox(height: 14),
-                  // Facebook Button
-                  _buildSocialButton(
-                    iconAsset: 'assets/images/Group 2043686815.png',
-                    label: 'Sign up with Facebook',
-                    onPressed: () {
-                      // TODO: Implement Facebook sign up
-                    },
-                  ),
-                  const SizedBox(height: 40),
+
                   // Sign In Link
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -384,72 +364,5 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  Widget _buildDivider() {
-    return Row(
-      children: [
-        Expanded(
-          child: Container(
-            height: 1,
-            color: AppColors.lightGrey,
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: Text(
-            'Or Sign up with',
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.grey,
-            ),
-          ),
-        ),
-        Expanded(
-          child: Container(
-            height: 1,
-            color: AppColors.lightGrey,
-          ),
-        ),
-      ],
-    );
-  }
 
-  Widget _buildSocialButton({
-    required String iconAsset,
-    required String label,
-    required VoidCallback onPressed,
-  }) {
-    return SizedBox(
-      width: double.infinity,
-      height: 48,
-      child: OutlinedButton(
-        onPressed: onPressed,
-        style: OutlinedButton.styleFrom(
-          backgroundColor: AppColors.white,
-          side: const BorderSide(color: AppColors.lightGrey),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24),
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(
-              iconAsset,
-              width: 20,
-              height: 20,
-            ),
-            const SizedBox(width: 12),
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: AppColors.darkGrey,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }

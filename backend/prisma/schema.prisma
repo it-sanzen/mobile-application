@@ -3,106 +3,45 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  ADMIN
-  MANAGER
-  USER
-}
-
-enum NotificationType {
-  PUSH
-  EMAIL
-  SMS
-}
-
 model User {
-  id              String    @id @default(uuid())
-  email           String    @unique
-  phone           String?   @unique
-  password        String
-  firstName       String
-  lastName        String
-  avatar          String?
-  role            Role      @default(USER)
-  isActive        Boolean   @default(true)
-  isEmailVerified Boolean   @default(false)
-  isPhoneVerified Boolean   @default(false)
-  refreshToken    String?
-  fcmToken        String?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id               String    @id @default(uuid())
+  email            String    @unique
+  password         String
+  name             String
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  resetToken       String?
+  resetTokenExpiry DateTime?
+  isAdmin          Boolean   @default(false)
+  address          String?
+  phone            String?
+  unit             String?
+  sessions         Session[]
+  documents        Document[]
+}
 
-  notifications   Notification[]
-  auditLogs       AuditLog[]
-  sessions        Session[]
+model Document {
+  id        String   @id @default(uuid())
+  title     String
+  type      String   // e.g., 'Contract', 'Receipt', 'NOC'
+  fileUrl   String
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Session {
-  id          String   @id @default(uuid())
-  userId      String
-  token       String   @unique
-  userAgent   String?
-  ipAddress   String?
-  expiresAt   DateTime
-  createdAt   DateTime @default(now())
-
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model Notification {
-  id        String           @id @default(uuid())
+  id        String   @id @default(uuid())
   userId    String
-  title     String
-  body      String
-  type      NotificationType
-  data      Json?
-  isRead    Boolean          @default(false)
-  sentAt    DateTime         @default(now())
-  readAt    DateTime?
-
-  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model AuditLog {
-  id         String   @id @default(uuid())
-  userId     String
-  action     String
-  resource   String
-  resourceId String?
-  oldData    Json?
-  newData    Json?
-  ipAddress  String?
-  userAgent  String?
-  createdAt  DateTime @default(now())
-
-  user       User     @relation(fields: [userId], references: [id])
-}
-
-model IntegrationConfig {
-  id          String   @id @default(uuid())
-  name        String   @unique
-  type        String   // 'akarati', 'automation', 'company'
-  baseUrl     String
-  apiKey      String?
-  isActive    Boolean  @default(true)
-  config      Json?
-  lastSyncAt  DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-model SyncLog {
-  id              String   @id @default(uuid())
-  integrationType String
-  operation       String
-  status          String   // 'success', 'failed', 'partial'
-  recordsAffected Int      @default(0)
-  errorMessage    String?
-  details         Json?
-  startedAt       DateTime @default(now())
-  completedAt     DateTime?
+  token     String   @unique
+  userAgent String?
+  ipAddress String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

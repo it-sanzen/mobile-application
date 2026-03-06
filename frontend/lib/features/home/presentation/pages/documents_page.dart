@@ -1,5 +1,15 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/services/api_service.dart';
+import '../../../../core/services/token_service.dart';
+import '../../../../core/models/document.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
 
 class DocumentsPage extends StatefulWidget {
   const DocumentsPage({super.key});
@@ -10,79 +20,68 @@ class DocumentsPage extends StatefulWidget {
 
 class _DocumentsPageState extends State<DocumentsPage> {
   int _selectedCategory = 0;
+  bool _isLoading = true;
+  List<DocumentModel> _documents = [];
+  final TextEditingController _searchController = TextEditingController();
+  bool _isSearching = false;
+  String _searchQuery = '';
 
-  final List<String> _categories = ['All', 'Contracts', 'Receipts', 'NOC'];
+  @override
+  void initState() {
+    super.initState();
+    _fetchDocuments();
+  }
 
-  final List<_DocumentItem> _documents = [
-    _DocumentItem(
-      name: 'Sales Purchase Agreement',
-      category: 'Contracts',
-      date: 'Jan 15, 2025',
-      size: '2.4 MB',
-      icon: Icons.description,
-      iconBgColor: const Color(0xFFE8F5E9),
-      iconColor: AppColors.primaryGreen,
-    ),
-    _DocumentItem(
-      name: 'Payment Receipt - Q4 2024',
-      category: 'Receipts',
-      date: 'Dec 28, 2024',
-      size: '540 KB',
-      icon: Icons.receipt_long,
-      iconBgColor: const Color(0xFFFFF3E0),
-      iconColor: const Color(0xFFE65100),
-    ),
-    _DocumentItem(
-      name: 'No Objection Certificate',
-      category: 'NOC',
-      date: 'Dec 10, 2024',
-      size: '1.1 MB',
-      icon: Icons.verified_outlined,
-      iconBgColor: const Color(0xFFE3F2FD),
-      iconColor: const Color(0xFF1565C0),
-    ),
-    _DocumentItem(
-      name: 'Unit Handover Agreement',
-      category: 'Contracts',
-      date: 'Nov 20, 2024',
-      size: '3.2 MB',
-      icon: Icons.handshake_outlined,
-      iconBgColor: const Color(0xFFE8F5E9),
-      iconColor: AppColors.primaryGreen,
-    ),
-    _DocumentItem(
-      name: 'Payment Receipt - Q3 2024',
-      category: 'Receipts',
-      date: 'Sep 30, 2024',
-      size: '480 KB',
-      icon: Icons.receipt_long,
-      iconBgColor: const Color(0xFFFFF3E0),
-      iconColor: const Color(0xFFE65100),
-    ),
-    _DocumentItem(
-      name: 'Parking NOC',
-      category: 'NOC',
-      date: 'Sep 12, 2024',
-      size: '890 KB',
-      icon: Icons.local_parking,
-      iconBgColor: const Color(0xFFE3F2FD),
-      iconColor: const Color(0xFF1565C0),
-    ),
-    _DocumentItem(
-      name: 'Interior Modification Contract',
-      category: 'Contracts',
-      date: 'Aug 05, 2024',
-      size: '1.8 MB',
-      icon: Icons.design_services_outlined,
-      iconBgColor: const Color(0xFFF3E5F5),
-      iconColor: const Color(0xFF7B1FA2),
-    ),
-  ];
+  Future<void> _fetchDocuments() async {
+    setState(() => _isLoading = true);
+    try {
+      final token = await TokenService.getToken();
+      final response = await ApiService.get('/documents/my', token: token);
+      if (response['success']) {
+        final List<dynamic> data = response['data'];
+        setState(() {
+          _documents = data.map((json) => DocumentModel.fromJson(json)).toList();
+          _isLoading = false;
+        });
+      } else {
+        setState(() => _isLoading = false);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(response['error'] ?? 'Failed to load documents')),
+          );
+        }
+      }
+    } catch (e) {
+      setState(() => _isLoading = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('An error occurred: $e')),
+        );
+      }
+    }
+  }
 
-  List<_DocumentItem> get _filteredDocuments {
-    if (_selectedCategory == 0) return _documents;
-    final category = _categories[_selectedCategory];
-    return _documents.where((d) => d.category == category).toList();
+  List<String> _categories(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return [l10n.all, l10n.contracts, l10n.receipts, l10n.noc, 'Others'];
+  }
+
+  List<DocumentModel> _filteredDocuments(BuildContext context) {
+    List<DocumentModel> filtered = _documents;
+    
+    // Filter by search query
+    if (_searchQuery.isNotEmpty) {
+      filtered = filtered.where((d) => 
+        d.title.toLowerCase().contains(_searchQuery.toLowerCase())
+      ).toList();
+    }
+
+    // Filter by category
+    if (_selectedCategory == 0) return filtered;
+    
+    final cats = ['All', 'Contract', 'Receipt', 'NOC', 'Other'];
+    final selectedCategory = cats[_selectedCategory];
+    return filtered.where((d) => d.type == selectedCategory).toList();
   }
 
   @override
@@ -91,17 +90,18 @@ class _DocumentsPageState extends State<DocumentsPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildHeader(),
-          _buildCategoryChips(),
+          _buildHeader(context),
+          _buildCategoryChips(context),
           Expanded(
-            child: _buildDocumentList(),
+            child: _buildDocumentList(context),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
       child: Row(
@@ -111,15 +111,15 @@ class _DocumentsPageState extends State<DocumentsPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Your Files',
+                l10n.yourFiles,
                 style: TextStyle(
                   fontSize: 14,
                   color: AppColors.darkGrey.withValues(alpha: 0.7),
                 ),
               ),
               const SizedBox(height: 2),
-              const Text(
-                'My Documents',
+              Text(
+                l10n.myDocuments,
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -128,41 +128,77 @@ class _DocumentsPageState extends State<DocumentsPage> {
               ),
             ],
           ),
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
+          if (_isSearching)
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: TextField(
+                  controller: _searchController,
+                  autofocus: true,
+                  decoration: InputDecoration(
+                    hintText: 'Search documents...',
+                    border: InputBorder.none,
+                    hintStyle: TextStyle(color: AppColors.darkGrey.withValues(alpha: 0.5)),
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      _searchQuery = value;
+                    });
+                  },
                 ),
-              ],
+              ),
             ),
-            child: const Icon(
-              Icons.search,
-              color: AppColors.primaryGreen,
-              size: 22,
-            ),
+          Row(
+            children: [
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _isSearching = !_isSearching;
+                    if (!_isSearching) {
+                      _searchController.clear();
+                      _searchQuery = '';
+                    }
+                  });
+                },
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: _isSearching ? AppColors.primaryGreen.withValues(alpha: 0.1) : AppColors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: _isSearching ? [] : [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.05),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    _isSearching ? Icons.close : Icons.search,
+                    color: AppColors.primaryGreen,
+                    size: 22,
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 
-  Widget _buildCategoryChips() {
+  Widget _buildCategoryChips(BuildContext context) {
+    final cats = _categories(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
-          children: List.generate(_categories.length, (index) {
+          children: List.generate(cats.length, (index) {
             final isSelected = _selectedCategory == index;
             return Padding(
-              padding: EdgeInsets.only(right: index < _categories.length - 1 ? 10 : 0),
+              padding: EdgeInsets.only(right: index < cats.length - 1 ? 10 : 0),
               child: GestureDetector(
                 onTap: () => setState(() => _selectedCategory = index),
                 child: AnimatedContainer(
@@ -194,7 +230,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
                           ],
                   ),
                   child: Text(
-                    _categories[index],
+                    cats[index],
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
@@ -210,8 +246,26 @@ class _DocumentsPageState extends State<DocumentsPage> {
     );
   }
 
-  Widget _buildDocumentList() {
-    final docs = _filteredDocuments;
+  Widget _buildDocumentList(BuildContext context) {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator(color: AppColors.primaryGreen));
+    }
+    final docs = _filteredDocuments(context);
+    if (docs.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.folder_open, size: 64, color: AppColors.darkGrey.withValues(alpha: 0.2)),
+            const SizedBox(height: 16),
+            Text(
+              'No documents found',
+              style: TextStyle(color: AppColors.darkGrey.withValues(alpha: 0.5)),
+            ),
+          ],
+        ),
+      );
+    }
     return ListView.separated(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
       itemCount: docs.length,
@@ -220,7 +274,35 @@ class _DocumentsPageState extends State<DocumentsPage> {
     );
   }
 
-  Widget _buildDocumentCard(_DocumentItem doc) {
+  Widget _buildDocumentCard(DocumentModel doc) {
+    String dateStr = '${doc.createdAt.day}/${doc.createdAt.month}/${doc.createdAt.year}';
+    
+    IconData icon = Icons.description;
+    Color iconColor = AppColors.primaryGreen;
+    Color iconBgColor = const Color(0xFFE8F5E9);
+
+    if (doc.type == 'Receipt') {
+      icon = Icons.receipt_long;
+      iconColor = const Color(0xFFE65100);
+      iconBgColor = const Color(0xFFFFF3E0);
+    } else if (doc.type == 'NOC') {
+      icon = Icons.verified_outlined;
+      iconColor = const Color(0xFF1565C0);
+      iconBgColor = const Color(0xFFE3F2FD);
+    } else if (doc.type == 'Title Deed') {
+      icon = Icons.landscape_outlined;
+      iconColor = const Color(0xFF2E7D32);
+      iconBgColor = const Color(0xFFE8F5E9);
+    } else if (doc.type == 'Identification') {
+      icon = Icons.badge_outlined;
+      iconColor = const Color(0xFFC62828);
+      iconBgColor = const Color(0xFFFFEBEE);
+    } else if (doc.type == 'Other') {
+      icon = Icons.more_horiz;
+      iconColor = const Color(0xFF455A64);
+      iconBgColor = const Color(0xFFECEFF1);
+    }
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -241,10 +323,10 @@ class _DocumentsPageState extends State<DocumentsPage> {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: doc.iconBgColor,
+              color: iconBgColor,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(doc.icon, color: doc.iconColor, size: 24),
+            child: Icon(icon, color: iconColor, size: 24),
           ),
           const SizedBox(width: 14),
           // Document info
@@ -253,7 +335,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  doc.name,
+                  doc.title,
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -275,7 +357,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
-                        doc.category,
+                        doc.type,
                         style: const TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
@@ -285,7 +367,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      '${doc.date}  •  ${doc.size}',
+                      dateStr,
                       style: TextStyle(
                         fontSize: 11,
                         color: AppColors.darkGrey.withValues(alpha: 0.55),
@@ -298,7 +380,18 @@ class _DocumentsPageState extends State<DocumentsPage> {
           ),
           // Download / view button
           GestureDetector(
-            onTap: () {},
+            onTap: () async {
+              final url = Uri.parse('${ApiService.baseUrl}/documents/${doc.id}/download');
+              if (await canLaunchUrl(url)) {
+                await launchUrl(url);
+              } else {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Could not open document')),
+                  );
+                }
+              }
+            },
             child: Container(
               width: 36,
               height: 36,
@@ -307,7 +400,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: const Icon(
-                Icons.download_outlined,
+                Icons.file_download_outlined,
                 color: AppColors.primaryGreen,
                 size: 20,
               ),
@@ -317,24 +410,4 @@ class _DocumentsPageState extends State<DocumentsPage> {
       ),
     );
   }
-}
-
-class _DocumentItem {
-  final String name;
-  final String category;
-  final String date;
-  final String size;
-  final IconData icon;
-  final Color iconBgColor;
-  final Color iconColor;
-
-  const _DocumentItem({
-    required this.name,
-    required this.category,
-    required this.date,
-    required this.size,
-    required this.icon,
-    required this.iconBgColor,
-    required this.iconColor,
-  });
 }

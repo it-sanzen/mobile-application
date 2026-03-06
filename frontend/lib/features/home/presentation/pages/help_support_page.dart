@@ -1,11 +1,21 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/localization/app_localizations.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HelpSupportPage extends StatelessWidget {
   const HelpSupportPage({super.key});
 
+  Future<void> _launchUrl(String urlString) async {
+    final Uri url = Uri.parse(urlString);
+    if (!await launchUrl(url)) {
+      throw Exception('Could not launch $url');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
@@ -15,9 +25,9 @@ class HelpSupportPage extends StatelessWidget {
           icon: const Icon(Icons.arrow_back_ios, color: AppColors.darkGrey, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Help & Support',
-          style: TextStyle(
+        title: Text(
+          l10n.helpSupport,
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
             color: AppColors.darkGrey,
@@ -44,9 +54,9 @@ class HelpSupportPage extends StatelessWidget {
                 children: [
                   const Icon(Icons.headset_mic_outlined, size: 40, color: AppColors.white),
                   const SizedBox(height: 12),
-                  const Text(
-                    'Need Help?',
-                    style: TextStyle(
+                  Text(
+                    l10n.needHelp,
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
                       color: AppColors.white,
@@ -54,7 +64,7 @@ class HelpSupportPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'Our support team is available\nSun–Thu, 9 AM – 6 PM (GST)',
+                    l10n.supportHours,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 13,
@@ -68,16 +78,17 @@ class HelpSupportPage extends StatelessWidget {
                       Expanded(
                         child: _buildContactButton(
                           icon: Icons.phone_outlined,
-                          label: 'Call Us',
+                          label: l10n.callUs,
                           onTap: () {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: const Text('Dialing +971 4 123 4567...'),
+                                content: Text(l10n.dialing),
                                 backgroundColor: AppColors.primaryGreen,
                                 behavior: SnackBarBehavior.floating,
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                               ),
                             );
+                            _launchUrl('tel:+971566660839');
                           },
                         ),
                       ),
@@ -85,16 +96,17 @@ class HelpSupportPage extends StatelessWidget {
                       Expanded(
                         child: _buildContactButton(
                           icon: Icons.email_outlined,
-                          label: 'Email',
+                          label: l10n.emailLabel,
                           onTap: () {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: const Text('Opening email to support@sanzen.ae...'),
+                                content: Text(l10n.openingEmail),
                                 backgroundColor: AppColors.primaryGreen,
                                 behavior: SnackBarBehavior.floating,
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                               ),
                             );
+                            _launchUrl('mailto:it.sanzenae@gmail.com');
                           },
                         ),
                       ),
@@ -107,7 +119,7 @@ class HelpSupportPage extends StatelessWidget {
 
             // FAQ section
             Text(
-              'Frequently Asked Questions',
+              l10n.faq,
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
@@ -118,62 +130,28 @@ class HelpSupportPage extends StatelessWidget {
             const SizedBox(height: 12),
 
             _buildFaqTile(
-              question: 'How do I track my construction progress?',
-              answer:
-                  'You can view your construction timeline from the home screen by tapping "View Timeline". This shows all construction milestones, including completed, in-progress, and upcoming phases.',
+              question: l10n.faqQ1,
+              answer: l10n.faqA1,
             ),
             const SizedBox(height: 8),
             _buildFaqTile(
-              question: 'How do I make a payment?',
-              answer:
-                  'Navigate to the Documents tab to view your payment schedule. You can make payments through bank transfer using the details provided in your Sales Purchase Agreement, or contact your property manager for assistance.',
+              question: l10n.faqQ2,
+              answer: l10n.faqA2,
             ),
             const SizedBox(height: 8),
             _buildFaqTile(
-              question: 'Can I customize my unit?',
-              answer:
-                  'Yes! Check out the Exclusive Add-ons section on the home screen for available customization options including Private Pool, EV Charger, Home Automation, and more.',
+              question: l10n.faqQ3,
+              answer: l10n.faqA3,
             ),
             const SizedBox(height: 8),
             _buildFaqTile(
-              question: 'How do I download my documents?',
-              answer:
-                  'Go to the Documents tab from the bottom navigation bar. You\'ll find all your contracts, receipts, and NOC documents. Tap the download icon next to any document to save it to your device.',
+              question: l10n.faqQ4,
+              answer: l10n.faqA4,
             ),
             const SizedBox(height: 8),
             _buildFaqTile(
-              question: 'When will my unit be ready for handover?',
-              answer:
-                  'The estimated completion date is shown on your property card on the home screen and in the construction timeline. You\'ll receive a notification when the handover date is confirmed.',
-            ),
-            const SizedBox(height: 24),
-
-            // Submit request button
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: OutlinedButton.icon(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: const Text('Support request submitted! We\'ll get back to you within 24 hours.'),
-                      backgroundColor: AppColors.primaryGreen,
-                      behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.send_outlined, size: 18),
-                label: const Text(
-                  'Submit a Request',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-                ),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.primaryGreen,
-                  side: const BorderSide(color: AppColors.primaryGreen, width: 1.5),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                ),
-              ),
+              question: l10n.faqQ5,
+              answer: l10n.faqA5,
             ),
           ],
         ),

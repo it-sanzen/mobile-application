@@ -9,8 +9,64 @@ import 'help_support_page.dart';
 import 'privacy_policy_page.dart';
 import 'about_sanzen_page.dart';
 
-class ProfilePage extends StatelessWidget {
+import '../../../../core/services/token_service.dart';
+import '../../../../core/localization/app_localizations.dart';
+
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  String _userName = 'Loading...';
+  String _userEmail = 'Loading...';
+  String _userInitials = '';
+  String _userPhone = 'Not provided';
+  String _userAddress = 'Not provided';
+  String _userUnit = 'Not provided';
+  String _userJoinedDate = 'Unknown';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final userData = await TokenService.getUserData();
+    print('DEBUG: TokenService returned: $userData');
+    if (mounted) {
+      setState(() {
+        _userName = userData['name'] ?? 'Unknown User';
+        _userEmail = userData['email'] ?? 'No email provided';
+        _userPhone = (userData['phone']?.isNotEmpty == true) ? userData['phone']! : 'Not provided';
+        _userAddress = (userData['address']?.isNotEmpty == true) ? userData['address']! : 'Not provided';
+        _userUnit = (userData['unit']?.isNotEmpty == true) ? userData['unit']! : 'Not provided';
+        
+        // Parse and format joining date (e.g. from 2024-03-01T... to "March 2024")
+        if (userData['createdAt'] != null && userData['createdAt']!.isNotEmpty) {
+           try {
+              final DateTime date = DateTime.parse(userData['createdAt']!);
+              const List<String> months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+              _userJoinedDate = '${months[date.month - 1]} ${date.year}';
+           } catch (e) {
+              _userJoinedDate = 'Recently joined';
+           }
+        }
+        
+        if (_userName.isNotEmpty && _userName != 'Unknown User') {
+          final parts = _userName.split(' ');
+          if (parts.length > 1) {
+            _userInitials = '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+          } else {
+            _userInitials = _userName.substring(0, _userName.length > 1 ? 2 : 1).toUpperCase();
+          }
+        }
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,9 +107,9 @@ class ProfilePage extends StatelessWidget {
   }
 
   Widget _buildTopTitle() {
-    return const Text(
-      'My Profile',
-      style: TextStyle(
+    return Text(
+      AppLocalizations.of(context).profile,
+      style: const TextStyle(
         fontSize: 17,
         fontWeight: FontWeight.w600,
         color: AppColors.darkGrey,
@@ -74,10 +130,10 @@ class ProfilePage extends StatelessWidget {
           width: 2,
         ),
       ),
-      child: const Center(
+      child: Center(
         child: Text(
-          'JA',
-          style: TextStyle(
+          _userInitials,
+          style: const TextStyle(
             fontSize: 30,
             fontWeight: FontWeight.w700,
             color: AppColors.primaryDark,
@@ -89,9 +145,9 @@ class ProfilePage extends StatelessWidget {
   }
 
   Widget _buildProfileName() {
-    return const Text(
-      'James Anderson',
-      style: TextStyle(
+    return Text(
+      _userName,
+      style: const TextStyle(
         fontSize: 22,
         fontWeight: FontWeight.w700,
         color: AppColors.darkGrey,
@@ -102,7 +158,7 @@ class ProfilePage extends StatelessWidget {
 
   Widget _buildProfileEmail() {
     return Text(
-      'james.anderson@email.com',
+      _userEmail,
       style: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w400,
@@ -150,18 +206,18 @@ class ProfilePage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const _SectionTitle(title: 'Personal Information'),
+          _SectionTitle(title: AppLocalizations.of(context).personalDetails),
           const SizedBox(height: 16),
-          _buildInfoRow(Icons.phone_outlined, 'Phone', '+971 50 123 4567'),
+          _buildInfoRow(Icons.phone_outlined, 'Phone', _userPhone),
           _buildInfoDivider(),
           _buildInfoRow(
-              Icons.location_on_outlined, 'Address', 'Dubai Marina, Dubai, UAE'),
+              Icons.location_on_outlined, 'Address', _userAddress),
           _buildInfoDivider(),
           _buildInfoRow(
-              Icons.apartment_outlined, 'Unit', 'Zen Lagoons Villa - A-204'),
+              Icons.apartment_outlined, 'Unit', _userUnit),
           _buildInfoDivider(),
           _buildInfoRow(
-              Icons.calendar_today_outlined, 'Member Since', 'January 2024'),
+              Icons.calendar_today_outlined, 'Member Since', _userJoinedDate),
         ],
       ),
     );
@@ -220,19 +276,28 @@ class ProfilePage extends StatelessWidget {
   }
 
   Widget _buildSettingsCard(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return _CardContainer(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const _SectionTitle(title: 'Settings'),
+          _SectionTitle(title: l10n.accountSettings),
           const SizedBox(height: 8),
           _buildMenuItem(
             context,
             Icons.person_outline_rounded,
-            'Edit Profile',
+            l10n.editProfile,
             const Color(0xFFF0F5F1),
             AppColors.primaryGreen,
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EditProfilePage())),
+            onTap: () async {
+              final bool? shouldRefresh = await Navigator.push(
+                context, 
+                MaterialPageRoute(builder: (_) => const EditProfilePage())
+              );
+              if (shouldRefresh == true) {
+                _loadUserData();
+              }
+            },
           ),
           _buildMenuDivider(),
           _buildMenuItem(
@@ -247,7 +312,7 @@ class ProfilePage extends StatelessWidget {
           _buildMenuItem(
             context,
             Icons.notifications_none_rounded,
-            'Notification Preferences',
+            l10n.notifications,
             const Color(0xFFEEF3FA),
             AppColors.info,
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationPreferencesPage())),
@@ -256,11 +321,11 @@ class ProfilePage extends StatelessWidget {
           _buildMenuItem(
             context,
             Icons.language_rounded,
-            'Language',
+            l10n.language,
             const Color(0xFFF5EEF8),
             const Color(0xFF9C27B0),
             trailing: Text(
-              'English',
+              l10n.locale.languageCode == 'ar' ? 'العربية' : 'English',
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w400,
@@ -275,16 +340,17 @@ class ProfilePage extends StatelessWidget {
   }
 
   Widget _buildSupportCard(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return _CardContainer(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const _SectionTitle(title: 'Support'),
+          _SectionTitle(title: l10n.supportHelp),
           const SizedBox(height: 8),
           _buildMenuItem(
             context,
             Icons.help_outline_rounded,
-            'Help & Support',
+            l10n.supportHelp,
             const Color(0xFFF0F5F1),
             AppColors.primaryGreen,
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HelpSupportPage())),
@@ -302,7 +368,7 @@ class ProfilePage extends StatelessWidget {
           _buildMenuItem(
             context,
             Icons.info_outline_rounded,
-            'About Sanzen',
+            l10n.aboutSanzen,
             const Color(0xFFEEF3FA),
             AppColors.info,
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AboutSanzenPage())),
@@ -371,6 +437,7 @@ class ProfilePage extends StatelessWidget {
   }
 
   Widget _buildSignOutButton(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return SizedBox(
       width: double.infinity,
       height: 48,
@@ -383,8 +450,8 @@ class ProfilePage extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
-              title: const Text(
-                'Sign Out',
+              title: Text(
+                l10n.logout,
                 style: TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w600,
@@ -419,8 +486,8 @@ class ProfilePage extends StatelessWidget {
                       (route) => false,
                     );
                   },
-                  child: const Text(
-                    'Sign Out',
+                  child: Text(
+                    l10n.logout,
                     style: TextStyle(
                       color: AppColors.error,
                       fontWeight: FontWeight.w600,
@@ -437,7 +504,7 @@ class ProfilePage extends StatelessWidget {
           color: AppColors.error.withValues(alpha: 0.7),
         ),
         label: Text(
-          'Sign Out',
+          l10n.logout,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,

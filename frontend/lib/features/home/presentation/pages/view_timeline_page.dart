@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/localization/app_localizations.dart';
 
 class ViewTimelinePage extends StatelessWidget {
   const ViewTimelinePage({super.key});
 
-  @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
@@ -15,8 +16,8 @@ class ViewTimelinePage extends StatelessWidget {
           icon: const Icon(Icons.arrow_back_ios, color: AppColors.darkGrey, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Construction Timeline',
+        title: Text(
+          l10n.constructionTimeline,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
@@ -97,39 +98,39 @@ class ViewTimelinePage extends StatelessWidget {
 
             // Timeline
             _buildMilestone(
-              title: 'Land Preparation',
-              subtitle: 'Site clearing, grading & soil testing',
+              title: l10n.landPreparation,
+              subtitle: l10n.landPreparationDesc,
               date: 'Jan 2024',
               status: _MilestoneStatus.completed,
               isFirst: true,
             ),
             _buildMilestone(
-              title: 'Foundation',
-              subtitle: 'Piling, raft foundation & waterproofing',
+              title: l10n.foundationLabel,
+              subtitle: l10n.foundationDesc,
               date: 'Mar 2024',
               status: _MilestoneStatus.completed,
             ),
             _buildMilestone(
-              title: 'Structure',
-              subtitle: 'Columns, slabs & structural framework',
+              title: l10n.structure,
+              subtitle: l10n.structureDesc,
               date: 'Jun 2024',
               status: _MilestoneStatus.inProgress,
             ),
             _buildMilestone(
-              title: 'MEP Rough-in',
-              subtitle: 'Mechanical, electrical & plumbing rough installation',
+              title: l10n.mepRoughin,
+              subtitle: l10n.mepRoughinDesc,
               date: 'Sep 2024',
               status: _MilestoneStatus.upcoming,
             ),
             _buildMilestone(
-              title: 'Interior Finishing',
-              subtitle: 'Flooring, painting, fixtures & cabinetry',
+              title: l10n.interiorFinishing,
+              subtitle: l10n.interiorFinishingDesc,
               date: 'Nov 2024',
               status: _MilestoneStatus.upcoming,
             ),
             _buildMilestone(
-              title: 'Handover',
-              subtitle: 'Final inspection, snagging & key handover',
+              title: l10n.handover,
+              subtitle: l10n.handoverDesc,
               date: 'Dec 2024',
               status: _MilestoneStatus.upcoming,
               isLast: true,

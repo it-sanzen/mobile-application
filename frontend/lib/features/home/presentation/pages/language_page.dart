@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../main.dart';
+import '../../../../core/localization/app_localizations.dart';
 
 class LanguagePage extends StatefulWidget {
   const LanguagePage({super.key});
@@ -9,21 +11,22 @@ class LanguagePage extends StatefulWidget {
 }
 
 class _LanguagePageState extends State<LanguagePage> {
-  String _selectedLanguage = 'English';
+  late String _selectedLanguageCode;
 
-  final List<_LanguageItem> _languages = [
-    _LanguageItem(name: 'English', nativeName: 'English', flag: '🇬🇧'),
-    _LanguageItem(name: 'Arabic', nativeName: 'العربية', flag: '🇦🇪'),
-    _LanguageItem(name: 'Hindi', nativeName: 'हिन्दी', flag: '🇮🇳'),
-    _LanguageItem(name: 'Chinese', nativeName: '中文', flag: '🇨🇳'),
-    _LanguageItem(name: 'French', nativeName: 'Français', flag: '🇫🇷'),
-    _LanguageItem(name: 'Russian', nativeName: 'Русский', flag: '🇷🇺'),
-    _LanguageItem(name: 'Urdu', nativeName: 'اردو', flag: '🇵🇰'),
-    _LanguageItem(name: 'Spanish', nativeName: 'Español', flag: '🇪🇸'),
+  final List<_LanguageItem> _languages = const [
+    _LanguageItem(name: 'English', nativeName: 'English', flag: '🇬🇧', code: 'en'),
+    _LanguageItem(name: 'Arabic', nativeName: 'العربية', flag: '🇦🇪', code: 'ar'),
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _selectedLanguageCode = appLocale.value.languageCode;
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
@@ -33,9 +36,9 @@ class _LanguagePageState extends State<LanguagePage> {
           icon: const Icon(Icons.arrow_back_ios, color: AppColors.darkGrey, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Language',
-          style: TextStyle(
+        title: Text(
+          l10n.language,
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
             color: AppColors.darkGrey,
@@ -52,9 +55,9 @@ class _LanguagePageState extends State<LanguagePage> {
               separatorBuilder: (_, __) => const SizedBox(height: 8),
               itemBuilder: (context, index) {
                 final lang = _languages[index];
-                final isSelected = _selectedLanguage == lang.name;
+                final isSelected = _selectedLanguageCode == lang.code;
                 return GestureDetector(
-                  onTap: () => setState(() => _selectedLanguage = lang.name),
+                  onTap: () => setState(() => _selectedLanguageCode = lang.code),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
                     padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
@@ -133,9 +136,11 @@ class _LanguagePageState extends State<LanguagePage> {
               height: 52,
               child: ElevatedButton(
                 onPressed: () {
+                  appLocale.value = Locale(_selectedLanguageCode);
+                  final selectedLangName = _languages.firstWhere((l) => l.code == _selectedLanguageCode).name;
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Language set to $_selectedLanguage'),
+                      content: Text('${l10n.languageSetTo} $selectedLangName'),
                       backgroundColor: AppColors.primaryGreen,
                       behavior: SnackBarBehavior.floating,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -149,9 +154,9 @@ class _LanguagePageState extends State<LanguagePage> {
                   elevation: 0,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 ),
-                child: const Text(
-                  'Confirm',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                child: Text(
+                  l10n.confirm,
+                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                 ),
               ),
             ),
@@ -166,10 +171,12 @@ class _LanguageItem {
   final String name;
   final String nativeName;
   final String flag;
+  final String code;
 
   const _LanguageItem({
     required this.name,
     required this.nativeName,
     required this.flag,
+    required this.code,
   });
 }

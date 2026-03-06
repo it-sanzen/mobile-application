@@ -1,0 +1,70 @@
+workflows:
+  ios-testflight:
+    name: iOS to TestFlight
+    instance_type: mac_mini_m1
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.yourcompany.mobileerpapp  # Replace with your Bundle ID
+      vars:
+        BUNDLE_ID: "com.yourcompany.mobileerpapp"  # Replace with your Bundle ID
+        APP_STORE_CONNECT_ISSUER_ID: $APP_STORE_CONNECT_ISSUER_ID
+        APP_STORE_CONNECT_KEY_ID: $APP_STORE_CONNECT_KEY_ID
+        APP_STORE_CONNECT_PRIVATE_KEY: $APP_STORE_CONNECT_PRIVATE_KEY
+      xcode: latest
+      cocoapods: default
+    triggering:
+      events:
+        - push
+        - pull_request
+      branch:
+        include_patterns:
+          - main
+          - develop
+    scripts:
+      - name: Install Flutter
+        script: |
+          git clone https://github.com/flutter/flutter.git --depth 1 -b stable
+          export PATH="$PATH:$PWD/flutter/bin"
+          flutter config --enable-ios-bitcode
+
+      - name: Get Flutter dependencies
+        script: |
+          export PATH="$PATH:$PWD/flutter/bin"
+          cd frontend
+          flutter pub get
+
+      - name: Build iOS app
+        script: |
+          export PATH="$PATH:$PWD/flutter/bin"
+          cd frontend
+          flutter build ios --release --no-codesign
+
+      - name: Build IPA
+        script: |
+          cd frontend/build/ios/Release-iphoneos
+          mkdir -p Payload
+          cp -r Runner.app Payload/
+          zip -r app.ipa Payload/
+
+      - name: Upload to TestFlight
+        script: |
+          cd frontend/build/ios/Release-iphoneos
+          xcrun altool --upload-app \
+            --file app.ipa \
+            --type ios \
+            --apiKey $APP_STORE_CONNECT_KEY_ID \
+            --apiIssuer $APP_STORE_CONNECT_ISSUER_ID \
+            --show-progress
+
+    artifacts:
+      - frontend/build/ios/Release-iphoneos/app.ipa
+      - flutter/bin/cache/artifacts/engine/ios/*.zip
+
+    publishing:
+      email:
+        recipients:
+          - your-email@example.com  # Replace with your email
+        notify:
+          success: true
+          failure: true

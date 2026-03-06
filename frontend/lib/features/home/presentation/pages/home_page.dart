@@ -7,7 +7,7 @@ import 'profile_page.dart';
 import 'view_timeline_page.dart';
 import 'addon_offer_page.dart';
 import 'property_details_page.dart';
-
+import '../../../../core/localization/app_localizations.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -91,6 +91,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   }
 
   Widget _buildHeader() {
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
       child: Row(
@@ -100,7 +101,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Good Morning,',
+                l10n.goodMorning,
                 style: TextStyle(
                   fontSize: 14,
                   color: AppColors.darkGrey.withValues(alpha: 0.7),
@@ -169,6 +170,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   }
 
   Widget _buildPropertyCard() {
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       child: Column(
@@ -177,8 +179,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'My Property',
+              Text(
+                l10n.myProperty,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
@@ -205,9 +207,9 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                     ),
                   );
                 },
-                child: const Text(
-                  'DETAILS',
-                  style: TextStyle(
+                child: Text(
+                  l10n.details,
+                  style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                     color: AppColors.primaryGreen,
@@ -326,6 +328,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   }
 
   Widget _buildProgressSection() {
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
       child: Column(
@@ -334,9 +337,9 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Foundation Stage',
-                style: TextStyle(
+              Text(
+                l10n.foundationStage,
+                style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
                   color: AppColors.black,
@@ -379,7 +382,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    'Est. Completion: Dec 2024',
+                    '${l10n.estCompletion} Dec 2024',
                     style: TextStyle(
                       fontSize: 13,
                       color: AppColors.darkGrey.withValues(alpha: 0.7),
@@ -398,9 +401,9 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 },
                 child: Row(
                   children: [
-                    const Text(
-                      'View Timeline',
-                      style: TextStyle(
+                    Text(
+                      l10n.viewTimeline,
+                      style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                         color: AppColors.primaryGreen,
@@ -423,6 +426,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   }
 
   Widget _buildUpdateTabs() {
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
       child: TabBar(
@@ -440,9 +444,9 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         ),
         indicatorColor: AppColors.primaryGreen,
         indicatorWeight: 2.5,
-        tabs: const [
-          Tab(text: 'Unit Updates'),
-          Tab(text: 'Company News'),
+        tabs: [
+          Tab(text: l10n.unitUpdates),
+          Tab(text: l10n.companyNews),
         ],
       ),
     );
@@ -615,13 +619,14 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   }
 
   Widget _buildExclusiveAddons() {
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 28, 0, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Exclusive Add-ons',
+          Text(
+            l10n.exclusiveAddons,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w700,
@@ -634,7 +639,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
             child: ListView(
               scrollDirection: Axis.horizontal,
               children: [
-                _buildAddonCard(
+                _buildAddonCard(context,
                   title: 'Private Pool',
                   description:
                       'Upgrade your villa with a temperature-controlled infinity pool.',
@@ -643,7 +648,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                   offerColors: [const Color(0xFF3E8E6B), const Color(0xFF2D6B50)],
                 ),
                 const SizedBox(width: 14),
-                _buildAddonCard(
+                _buildAddonCard(context,
                   title: 'EV Charger',
                   description:
                       'Install a high-speed home charging station for your E...',
@@ -652,7 +657,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                   offerColors: [const Color(0xFF3E8E6B), const Color(0xFF2D6B50)],
                 ),
                 const SizedBox(width: 14),
-                _buildAddonCard(
+                _buildAddonCard(context,
                   title: 'Home Automation',
                   description:
                       'Smart lighting, climate control & security — all from your phone.',
@@ -661,7 +666,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                   offerColors: [const Color(0xFF1565C0), const Color(0xFF0D47A1)],
                 ),
                 const SizedBox(width: 14),
-                _buildAddonCard(
+                _buildAddonCard(context,
                   title: 'Solar Solutions',
                   description:
                       'Reduce energy bills with premium rooftop solar panel installation.',
@@ -670,7 +675,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                   offerColors: [const Color(0xFFE65100), const Color(0xFFBF360C)],
                 ),
                 const SizedBox(width: 14),
-                _buildAddonCard(
+                _buildAddonCard(context,
                   title: 'Kitchen Design',
                   description:
                       'Bespoke kitchen layouts with premium finishes and smart appliances.',
@@ -687,7 +692,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     );
   }
 
-  Widget _buildAddonCard({
+  Widget _buildAddonCard(BuildContext context, {
     required String title,
     required String description,
     String? imageAsset,
@@ -779,26 +784,27 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  description,
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: AppColors.darkGrey.withValues(alpha: 0.7),
-                    height: 1.4,
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    description,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: AppColors.darkGrey.withValues(alpha: 0.7),
+                      height: 1.4,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 10),
-                SizedBox(
-                  width: double.infinity,
-                  height: 34,
-                  child: ElevatedButton(
+                  const Spacer(),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 34,
+                    child: ElevatedButton(
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -821,9 +827,9 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                       ),
                       padding: EdgeInsets.zero,
                     ),
-                    child: const Text(
-                      'View Offer',
-                      style: TextStyle(
+                    child: Text(
+                      AppLocalizations.of(context).viewOffer,
+                      style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                       ),
@@ -833,12 +839,14 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
               ],
             ),
           ),
+          ),
         ],
       ),
     );
   }
 
   Widget _buildBottomNav() {
+    final l10n = AppLocalizations.of(context);
     return Container(
       decoration: BoxDecoration(
         color: AppColors.white,
@@ -861,26 +869,26 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         unselectedFontSize: 11,
         selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
         elevation: 0,
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: 'Home',
+            icon: const Icon(Icons.home_outlined),
+            activeIcon: const Icon(Icons.home),
+            label: l10n.home,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.apartment_outlined),
-            activeIcon: Icon(Icons.apartment),
-            label: 'Properties',
+            icon: const Icon(Icons.apartment_outlined),
+            activeIcon: const Icon(Icons.apartment),
+            label: l10n.properties,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.description_outlined),
-            activeIcon: Icon(Icons.description),
-            label: 'Documents',
+            icon: const Icon(Icons.description_outlined),
+            activeIcon: const Icon(Icons.description),
+            label: l10n.documents,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            activeIcon: Icon(Icons.person),
-            label: 'Profile',
+            icon: const Icon(Icons.person_outline),
+            activeIcon: const Icon(Icons.person),
+            label: l10n.profile,
           ),
         ],
       ),

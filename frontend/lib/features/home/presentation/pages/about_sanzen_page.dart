@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/localization/app_localizations.dart';
 
 class AboutSanzenPage extends StatelessWidget {
   const AboutSanzenPage({super.key});
 
-  @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
@@ -15,8 +16,8 @@ class AboutSanzenPage extends StatelessWidget {
           icon: const Icon(Icons.arrow_back_ios, color: AppColors.darkGrey, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'About Sanzen',
+        title: Text(
+          l10n.aboutSanzen,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
@@ -86,45 +87,35 @@ class AboutSanzenPage extends StatelessWidget {
 
             // About section
             _buildCard(
-              title: 'Our Story',
-              content:
-                  'Sanzen Properties is a premier real estate developer based in Dubai, UAE. '
-                  'Founded with a vision to redefine modern living, Sanzen creates exceptional '
-                  'residential communities that blend architectural excellence with sustainable design.\n\n'
-                  'With over 15 years of experience in the UAE\'s dynamic real estate market, '
-                  'we have developed award-winning projects that set new benchmarks in quality, '
-                  'innovation, and customer satisfaction.',
+              title: l10n.ourStory,
+              content: l10n.ourStoryText,
             ),
             const SizedBox(height: 12),
 
             // Mission & Vision
             _buildCard(
-              title: 'Our Mission',
-              content:
-                  'To build sustainable, innovative living spaces that enhance the quality of life '
-                  'for our homeowners, while setting new standards of excellence in the real estate industry.',
+              title: l10n.ourMission,
+              content: l10n.ourMissionText,
             ),
             const SizedBox(height: 12),
             _buildCard(
-              title: 'Our Vision',
-              content:
-                  'To be the most trusted and admired real estate developer in the Middle East, '
-                  'known for creating communities that people are proud to call home.',
+              title: l10n.ourVision,
+              content: l10n.ourVisionText,
             ),
             const SizedBox(height: 12),
 
             // Key numbers
             _buildCard(
-              title: 'By the Numbers',
+              title: l10n.byTheNumbers,
               child: Row(
                 children: [
-                  _buildStatItem('15+', 'Years'),
+                  _buildStatItem('15+', l10n.years),
                   _buildStatDivider(),
-                  _buildStatItem('2,500+', 'Units'),
+                  _buildStatItem('2,500+', l10n.units),
                   _buildStatDivider(),
-                  _buildStatItem('12', 'Projects'),
+                  _buildStatItem('12', l10n.projects),
                   _buildStatDivider(),
-                  _buildStatItem('4.8★', 'Rating'),
+                  _buildStatItem('4.8★', l10n.rating),
                 ],
               ),
             ),
@@ -132,11 +123,11 @@ class AboutSanzenPage extends StatelessWidget {
 
             // Social links
             _buildCard(
-              title: 'Follow Us',
+              title: l10n.followUs,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildSocialIcon(Icons.language, 'Website'),
+                  _buildSocialIcon(Icons.language, l10n.website),
                   const SizedBox(width: 20),
                   _buildSocialIcon(Icons.camera_alt_outlined, 'Instagram'),
                   const SizedBox(width: 20),
@@ -150,7 +141,7 @@ class AboutSanzenPage extends StatelessWidget {
 
             // App version
             Text(
-              'Sanzen App v1.0.0',
+              l10n.appVersion,
               style: TextStyle(
                 fontSize: 12,
                 color: AppColors.darkGrey.withValues(alpha: 0.35),
@@ -158,7 +149,7 @@ class AboutSanzenPage extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              '© 2025 Sanzen Properties LLC. All rights reserved.',
+              l10n.copyright,
               style: TextStyle(
                 fontSize: 11,
                 color: AppColors.darkGrey.withValues(alpha: 0.3),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../../home/presentation/pages/property_details_page.dart';
 
 class PropertiesPage extends StatefulWidget {
@@ -11,7 +12,11 @@ class PropertiesPage extends StatefulWidget {
 
 class _PropertiesPageState extends State<PropertiesPage> {
   int _selectedFilter = 0;
-  final List<String> _filters = ['All', 'Villa', 'Apartment', 'Townhouse'];
+
+  List<String> _filters(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return [l10n.all, l10n.villa, l10n.apartment, l10n.townhouse];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,10 +27,10 @@ class _PropertiesPageState extends State<PropertiesPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildHeader(),
-              _buildQuickStats(),
+              _buildHeader(context),
+              _buildQuickStats(context),
               _buildFilterChips(),
-              _buildPropertyList(),
+              _buildPropertyList(context),
               const SizedBox(height: 24),
             ],
           ),
@@ -36,17 +41,18 @@ class _PropertiesPageState extends State<PropertiesPage> {
 
   // ───────────────────────────── HEADER ─────────────────────────────
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Column(
+          Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'My Properties',
+                l10n.myProperties,
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -55,7 +61,7 @@ class _PropertiesPageState extends State<PropertiesPage> {
               ),
               SizedBox(height: 2),
               Text(
-                '2 properties owned',
+                '2 ${l10n.propertiesOwned}',
                 style: TextStyle(
                   fontSize: 14,
                   color: Color(0xFF8A8A8A),
@@ -90,7 +96,8 @@ class _PropertiesPageState extends State<PropertiesPage> {
 
   // ─────────────────────────── QUICK STATS ──────────────────────────
 
-  Widget _buildQuickStats() {
+  Widget _buildQuickStats(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
       child: Row(
@@ -100,7 +107,7 @@ class _PropertiesPageState extends State<PropertiesPage> {
             iconBg: const Color(0xFFE8F5E9),
             iconColor: AppColors.primaryGreen,
             value: '2',
-            label: 'Total',
+            label: l10n.total,
           ),
           const SizedBox(width: 12),
           _buildStatCard(
@@ -108,7 +115,7 @@ class _PropertiesPageState extends State<PropertiesPage> {
             iconBg: const Color(0xFFFFF8E1),
             iconColor: AppColors.gold,
             value: '1',
-            label: 'Building',
+            label: l10n.building,
           ),
           const SizedBox(width: 12),
           _buildStatCard(
@@ -116,7 +123,7 @@ class _PropertiesPageState extends State<PropertiesPage> {
             iconBg: const Color(0xFFE8F5E9),
             iconColor: AppColors.success,
             value: '1',
-            label: 'Ready',
+            label: l10n.ready,
           ),
         ],
       ),
@@ -187,7 +194,7 @@ class _PropertiesPageState extends State<PropertiesPage> {
         height: 38,
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          itemCount: _filters.length,
+          itemCount: _filters(context).length,
           itemBuilder: (context, index) {
             final isSelected = _selectedFilter == index;
             return Padding(
@@ -221,7 +228,7 @@ class _PropertiesPageState extends State<PropertiesPage> {
                         : null,
                   ),
                   child: Text(
-                    _filters[index],
+                    _filters(context)[index],
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
@@ -240,7 +247,8 @@ class _PropertiesPageState extends State<PropertiesPage> {
 
   // ──────────────────────── PROPERTY LIST ────────────────────────────
 
-  Widget _buildPropertyList() {
+  Widget _buildPropertyList(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       child: Column(
@@ -250,13 +258,14 @@ class _PropertiesPageState extends State<PropertiesPage> {
             unitBadge: 'UNIT A-204',
             name: 'Zen Lagoons Villa',
             location: 'Palm Jumeirah, Dubai',
-            type: 'Villa',
+            type: l10n.villa,
             bedrooms: '5 BR',
             area: '4,200 sqft',
-            status: 'Under Construction',
+            status: l10n.underConstruction,
             statusColor: AppColors.gold,
             progress: 0.45,
             progressLabel: '45%',
+            context: context,
           ),
           const SizedBox(height: 16),
           _buildPropertyCard(
@@ -264,13 +273,14 @@ class _PropertiesPageState extends State<PropertiesPage> {
             unitBadge: 'UNIT B-102',
             name: 'Sukoon Residences',
             location: 'Dubai Hills Estate',
-            type: 'Apartment',
+            type: l10n.apartment,
             bedrooms: '3 BR',
             area: '2,100 sqft',
-            status: 'Ready',
+            status: l10n.ready,
             statusColor: AppColors.success,
             progress: null,
             progressLabel: null,
+            context: context,
           ),
         ],
       ),
@@ -289,7 +299,9 @@ class _PropertiesPageState extends State<PropertiesPage> {
     required Color statusColor,
     required double? progress,
     required String? progressLabel,
+    required BuildContext context,
   }) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       decoration: BoxDecoration(
         color: AppColors.white,
@@ -442,7 +454,7 @@ class _PropertiesPageState extends State<PropertiesPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Construction Progress',
+                        l10n.constructionProgress,
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
@@ -510,8 +522,8 @@ class _PropertiesPageState extends State<PropertiesPage> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          child: const Text(
-                            'View Details',
+                          child: Text(
+                            l10n.viewDetails,
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
