@@ -64,7 +64,7 @@ class PasswordResetSuccessPage extends StatelessWidget {
                 height: 48,
                 child: DecoratedBox(
                   decoration: BoxDecoration(
-                    gradient: AppColors.primaryGradient,
+                    gradient: AppColors.luxuryGradient,
                     borderRadius: BorderRadius.circular(24),
                   ),
                   child: ElevatedButton(

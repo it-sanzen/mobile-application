@@ -330,7 +330,7 @@ class _EnterOtpPageState extends State<EnterOtpPage> {
       child: DecoratedBox(
         decoration: BoxDecoration(
           gradient: _isOtpComplete
-              ? AppColors.primaryGradient
+              ? AppColors.luxuryGradient
               : null,
           color: _isOtpComplete ? null : AppColors.grey,
           borderRadius: BorderRadius.circular(24),

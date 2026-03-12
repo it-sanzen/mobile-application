@@ -145,21 +145,33 @@ class AppLocalizations {
       'copyright': '© 2025 Sanzen Properties LLC. All rights reserved.',
       // Privacy Policy Page
       'privacy_policy': 'Privacy Policy',
-      'last_updated': 'Last Updated: January 1, 2025',
-      'pp_s1_title': '1. Information We Collect',
-      'pp_s1': 'Sanzen Properties ("we", "us", or "our") collects personal information that you voluntarily provide when you register for an account, express interest in obtaining information about us or our products, or otherwise contact us.\n\nPersonal information may include your name, email address, phone number, mailing address, property preferences, payment information, and any other information you choose to provide.',
-      'pp_s2_title': '2. How We Use Your Information',
-      'pp_s2': 'We use the information we collect to:\n\n• Provide, operate, and maintain our services\n• Process transactions and send related information\n• Send you construction updates and property notifications\n• Respond to your comments, questions, and requests\n• Send you technical notices, updates, and security alerts\n• Provide personalized content and recommendations\n• Monitor and analyze usage trends and preferences',
-      'pp_s3_title': '3. Information Sharing',
-      'pp_s3': 'We do not sell, trade, or otherwise transfer your personal information to third parties without your consent, except as described in this privacy policy.\n\nWe may share your information with trusted service providers who assist us in operating our platform, conducting our business, or servicing you, so long as those parties agree to keep this information confidential.',
-      'pp_s4_title': '4. Data Security',
-      'pp_s4': 'We implement industry-standard security measures to maintain the safety of your personal information. Your data is encrypted in transit and at rest using AES-256 encryption.\n\nHowever, no method of transmission over the Internet or method of electronic storage is 100% secure, and we cannot guarantee its absolute security.',
-      'pp_s5_title': '5. Data Retention',
-      'pp_s5': 'We retain your personal information only for as long as necessary to fulfill the purposes for which we collected it, including for the purposes of satisfying any legal, accounting, or reporting requirements.\n\nUpon account deletion or request, your personal data will be removed within 30 days, unless retention is required by law.',
-      'pp_s6_title': '6. Your Rights',
-      'pp_s6': 'Depending on your location, you may have the following rights regarding your personal data:\n\n• Right to access your personal information\n• Right to rectify inaccurate data\n• Right to erasure of your data\n• Right to restrict processing\n• Right to data portability\n• Right to object to processing',
-      'pp_s7_title': '7. Contact Us',
-      'pp_s7': 'If you have questions or concerns about this privacy policy, please contact us at:\n\nSanzen Properties LLC\nEmail: privacy@sanzen.ae\nPhone: +971 4 123 4567\nAddress: Downtown Dubai, UAE',
+      'last_updated': 'Last Updated: March 10, 2026',
+      'pp_s1_title': 'Who We Are',
+      'pp_s1': 'SANZEN Developments LLC is a Dubai-based real estate development company. Our website, www.sanzen.ae, provides information about our luxury residential projects and allows visitors to contact us, register interest, and request materials.',
+      'pp_s2_title': 'Information We Collect',
+      'pp_s2': 'Contact details — name, email, and phone number you provide via forms or direct messages.\n\nCommunication data — messages exchanged via WhatsApp, Instagram, Messenger, email, or phone.\n\nUsage data — non-identifying info like device, browser, pages viewed, and interactions to improve performance.\n\nMarketing data — campaign parameters (e.g., UTM tags) to measure channel effectiveness.',
+      'pp_s3_title': 'How We Use Your Information',
+      'pp_s3': 'Respond to inquiries and provide requested materials.\n\nRegister interest, manage leads, and schedule follow-ups.\n\nSend project updates or offers (only with your consent).\n\nImprove site functionality, content, and user experience.\n\nMeasure and optimize marketing performance.\n\nWe do not sell or rent your personal data.',
+      'pp_s4_title': 'Data Sharing & Processors',
+      'pp_s4': 'We may share limited data with trusted providers strictly for operations (e.g., hosting, analytics, CRM, or communication tools). These partners process data securely and only on our instructions, consistent with applicable privacy laws.',
+      'pp_s5_title': 'Legal Basis (GDPR)',
+      'pp_s5': 'Where applicable, we process data based on one or more of the following: legitimate interests, performance of a contract, consent, and legal obligations.',
+      'pp_s6_title': 'Data Security',
+      'pp_s6': 'We use appropriate technical and organizational measures to protect your information from unauthorized access, alteration, or loss. Access is restricted to trained, authorized personnel.',
+      'pp_s7_title': 'Data Retention',
+      'pp_s7': 'We retain personal data only as long as necessary for the purposes described above or as required by law. Upon request, we will delete your data from our active systems.',
+      'pp_s8_title': 'Your Rights',
+      'pp_s8': 'Access a copy of your personal data.\n\nRectify inaccurate or incomplete information.\n\nRequest deletion ("right to be forgotten").\n\nWithdraw consent for marketing communications.\n\nObject to or restrict certain processing where applicable by law.\n\nTo exercise your rights, contact us at support@sanzen.ae or via WhatsApp at +971 56 666 0839.',
+      'pp_s9_title': 'Cookies & Analytics',
+      'pp_s9': 'Our site may use cookies and analytics (e.g., Google Analytics) to enhance performance and understand usage. You can control cookies via your browser settings. For more details, review our Cookies Notice if provided.',
+      'pp_s10_title': 'Third-Party Links',
+      'pp_s10': 'Our website may link to external sites (e.g., Dubizzle, Bayut, Instagram). We are not responsible for their content or privacy practices. Please review the privacy policies of those services.',
+      'pp_s11_title': 'Children\'s Privacy',
+      'pp_s11': 'Our services are not directed to children under 16. We do not knowingly collect personal data from children. If you believe a child has provided us data, please contact us for prompt removal.',
+      'pp_s12_title': 'International Transfers',
+      'pp_s12': 'Depending on your location and our providers, your information may be processed outside your country. We ensure appropriate safeguards consistent with applicable law.',
+      'pp_s13_title': 'Changes to This Policy',
+      'pp_s13': 'We may update this Privacy Policy to reflect new features, legal requirements, or security improvements. The latest version will be posted on this page with the "Last updated" date.',
       // Notifications Page
       'mark_all_read': 'Mark all read',
       'today': 'Today',
@@ -649,10 +661,22 @@ class AppLocalizations {
   String get ppS4 => _t('pp_s4', '');
   String get ppS5Title => _t('pp_s5_title', '5. Data Retention');
   String get ppS5 => _t('pp_s5', '');
-  String get ppS6Title => _t('pp_s6_title', '6. Your Rights');
+  String get ppS6Title => _t('pp_s6_title', 'Data Security');
   String get ppS6 => _t('pp_s6', '');
-  String get ppS7Title => _t('pp_s7_title', '7. Contact Us');
+  String get ppS7Title => _t('pp_s7_title', 'Data Retention');
   String get ppS7 => _t('pp_s7', '');
+  String get ppS8Title => _t('pp_s8_title', 'Your Rights');
+  String get ppS8 => _t('pp_s8', '');
+  String get ppS9Title => _t('pp_s9_title', 'Cookies & Analytics');
+  String get ppS9 => _t('pp_s9', '');
+  String get ppS10Title => _t('pp_s10_title', 'Third-Party Links');
+  String get ppS10 => _t('pp_s10', '');
+  String get ppS11Title => _t('pp_s11_title', 'Children\'s Privacy');
+  String get ppS11 => _t('pp_s11', '');
+  String get ppS12Title => _t('pp_s12_title', 'International Transfers');
+  String get ppS12 => _t('pp_s12', '');
+  String get ppS13Title => _t('pp_s13_title', 'Changes to This Policy');
+  String get ppS13 => _t('pp_s13', '');
   // Notifications Page
   String get markAllRead => _t('mark_all_read', 'Mark all read');
   String get todayLabel => _t('today', 'Today');

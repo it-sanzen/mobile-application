@@ -11,6 +11,9 @@ class TokenService {
   static const _userAddressKey = 'user_address';
   static const _userUnitKey = 'user_unit';
   static const _userCreatedAtKey = 'user_created_at';
+  
+  static const _rememberedEmailKey = 'remembered_email';
+  static const _rememberedPasswordKey = 'remembered_password';
 
   static Future<void> saveAuthData({
     required String token,
@@ -57,5 +60,22 @@ class TokenService {
     await _storage.delete(key: _userAddressKey);
     await _storage.delete(key: _userUnitKey);
     await _storage.delete(key: _userCreatedAtKey);
+  }
+
+  static Future<void> saveRememberedCredentials(String email, String password) async {
+    await _storage.write(key: _rememberedEmailKey, value: email);
+    await _storage.write(key: _rememberedPasswordKey, value: password);
+  }
+
+  static Future<Map<String, String?>> getRememberedCredentials() async {
+    return {
+      'email': await _storage.read(key: _rememberedEmailKey),
+      'password': await _storage.read(key: _rememberedPasswordKey),
+    };
+  }
+
+  static Future<void> clearRememberedCredentials() async {
+    await _storage.delete(key: _rememberedEmailKey);
+    await _storage.delete(key: _rememberedPasswordKey);
   }
 }

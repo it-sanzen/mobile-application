@@ -28,73 +28,115 @@ class PrivacyPolicyPage extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: AppColors.white,
-            borderRadius: BorderRadius.circular(14),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04),
-                blurRadius: 10,
-                offset: const Offset(0, 2),
+        child: Column(
+          children: [
+            // SANZEN branding header
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 28),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF1D3724), Color(0xFF0E552B)],
+                ),
+                borderRadius: BorderRadius.circular(16),
               ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Last updated
-              Center(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryGreen.withValues(alpha: 0.08),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    l10n.lastUpdated,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.primaryGreen,
+              child: Column(
+                children: [
+                  Container(
+                    width: 56,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: const Center(
+                      child: Icon(
+                        Icons.shield_outlined,
+                        size: 28,
+                        color: AppColors.gold,
+                      ),
                     ),
                   ),
-                ),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'SANZEN',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.primaryGreen,
+                      letterSpacing: 4,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    l10n.privacyPolicy,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w400,
+                      color: AppColors.white.withValues(alpha: 0.7),
+                      letterSpacing: 1,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 24),
+            ),
+            const SizedBox(height: 16),
 
-              _buildSection(
-                l10n.ppS1Title,
-                l10n.ppS1,
+            // Privacy policy content card
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: AppColors.white,
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-              _buildSection(
-                l10n.ppS2Title,
-                l10n.ppS2,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Last updated
+                  Center(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryGreen.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        l10n.lastUpdated,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.primaryGreen,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  _buildSection(l10n.ppS1Title, l10n.ppS1),
+                  _buildSection(l10n.ppS2Title, l10n.ppS2),
+                  _buildSection(l10n.ppS3Title, l10n.ppS3),
+                  _buildSection(l10n.ppS4Title, l10n.ppS4),
+                  _buildSection(l10n.ppS5Title, l10n.ppS5),
+                  _buildSection(l10n.ppS6Title, l10n.ppS6),
+                  _buildSection(l10n.ppS7Title, l10n.ppS7),
+                  _buildSection(l10n.ppS8Title, l10n.ppS8),
+                  _buildSection(l10n.ppS9Title, l10n.ppS9),
+                  _buildSection(l10n.ppS10Title, l10n.ppS10),
+                  _buildSection(l10n.ppS11Title, l10n.ppS11),
+                  _buildSection(l10n.ppS12Title, l10n.ppS12),
+                  _buildSection(l10n.ppS13Title, l10n.ppS13),
+                ],
               ),
-              _buildSection(
-                l10n.ppS3Title,
-                l10n.ppS3,
-              ),
-              _buildSection(
-                l10n.ppS4Title,
-                l10n.ppS4,
-              ),
-              _buildSection(
-                l10n.ppS5Title,
-                l10n.ppS5,
-              ),
-              _buildSection(
-                l10n.ppS6Title,
-                l10n.ppS6,
-              ),
-              _buildSection(
-                l10n.ppS7Title,
-                l10n.ppS7,
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

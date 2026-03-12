@@ -8,6 +8,8 @@ import 'language_page.dart';
 import 'help_support_page.dart';
 import 'privacy_policy_page.dart';
 import 'about_sanzen_page.dart';
+import 'payments_page.dart';
+import '../../../../features/design_studio/presentation/pages/my_saved_designs_page.dart';
 
 import '../../../../core/services/token_service.dart';
 import '../../../../core/localization/app_localizations.dart';
@@ -302,11 +304,29 @@ class _ProfilePageState extends State<ProfilePage> {
           _buildMenuDivider(),
           _buildMenuItem(
             context,
+            Icons.design_services_outlined,
+            'My Saved Designs',
+            const Color(0xFFF1F0FE),
+            const Color(0xFF6C63FF),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MySavedDesignsPage())),
+          ),
+          _buildMenuDivider(),
+          _buildMenuItem(
+            context,
             Icons.lock_outline_rounded,
             'Change Password',
             const Color(0xFFFAF6EE),
             AppColors.gold,
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ChangePasswordPage())),
+          ),
+          _buildMenuDivider(),
+          _buildMenuItem(
+            context,
+            Icons.payment_rounded,
+            'Payments',
+            const Color(0xFFE8F5E9),
+            AppColors.primaryGreen,
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PaymentsPage())),
           ),
           _buildMenuDivider(),
           _buildMenuItem(
@@ -359,7 +379,7 @@ class _ProfilePageState extends State<ProfilePage> {
           _buildMenuItem(
             context,
             Icons.privacy_tip_outlined,
-            'Privacy Policy',
+            l10n.privacyPolicy,
             const Color(0xFFFFF5EE),
             const Color(0xFFFF9800),
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PrivacyPolicyPage())),

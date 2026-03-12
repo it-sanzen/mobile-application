@@ -8,20 +8,27 @@ datasource db {
 }
 
 model User {
-  id               String    @id @default(uuid())
-  email            String    @unique
+  id               String          @id @default(uuid())
+  email            String          @unique
   password         String
   name             String
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
   resetToken       String?
   resetTokenExpiry DateTime?
-  isAdmin          Boolean   @default(false)
+  isAdmin          Boolean         @default(false)
   address          String?
   phone            String?
   unit             String?
   sessions         Session[]
   documents        Document[]
+  unitUpdates      UnitUpdate[]
+  userProperties   UserProperty[]
+  payments         Payment[]
+  notifications    Notification[]
+  savedDesigns     SavedDesign[]
+
+  @@index([email])
 }
 
 model Document {
@@ -44,4 +51,278 @@ model Session {
   expiresAt DateTime
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Enums for Home Section
+enum UpdateType {
+  ELECTRICAL
+  PLUMBING
+  CONSTRUCTION
+  INSPECTION
+  MILESTONE
+  GENERAL
+}
+
+enum NewsCategory {
+  ANNOUNCEMENT
+  AWARD
+  EVENT
+  SUSTAINABILITY
+  COMMUNITY
+}
+
+// Unit Updates (User-Specific)
+model UnitUpdate {
+  id          String     @id @default(uuid())
+  userId      String
+  updateType  UpdateType @default(GENERAL)
+  title       String
+  description String     @db.Text
+  time        String
+  publishedAt DateTime   @default(now())
+  isPublished Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([publishedAt(sort: Desc)])
+  @@index([isPublished])
+  @@index([updateType])
+  @@map("UnitUpdate")
+}
+
+// Company News (Global)
+model CompanyNews {
+  id          String       @id @default(uuid())
+  category    NewsCategory @default(ANNOUNCEMENT)
+  title       String
+  description String       @db.Text
+  time        String
+  publishedAt DateTime     @default(now())
+  isPublished Boolean      @default(true)
+  isFeatured  Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([publishedAt(sort: Desc)])
+  @@index([isPublished])
+  @@index([category])
+  @@index([isFeatured])
+  @@map("CompanyNews")
+}
+
+// Property Enums
+enum PropertyType {
+  VILLA
+  APARTMENT
+  TOWNHOUSE
+  PENTHOUSE
+}
+
+enum PropertyStatus {
+  UNDER_CONSTRUCTION
+  READY
+  HANDOVER_COMPLETE
+}
+
+// Property Model
+model Property {
+  id                   String         @id @default(uuid())
+  name                 String
+  location             String
+  propertyType         PropertyType
+  imageUrl             String?
+  bedrooms             Int
+  area                 Float
+  status               PropertyStatus @default(UNDER_CONSTRUCTION)
+  completionPercentage Float          @default(0)
+  currentPhase         String?
+  estimatedCompletion  String?
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+
+  userProperties      UserProperty[]
+  timelineMilestones  TimelineMilestone[]
+  payments            Payment[]
+
+  @@index([status])
+  @@index([propertyType])
+  @@map("property")
+}
+
+// UserProperty (Junction table linking users to properties)
+model UserProperty {
+  id         String   @id @default(uuid())
+  userId     String
+  propertyId String
+  unitCode   String
+  isPrimary  Boolean  @default(false)
+  assignedAt DateTime @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, propertyId])
+  @@index([userId])
+  @@index([propertyId])
+  @@map("user_property")
+}
+
+// Timeline Milestone Status Enum
+enum MilestoneStatus {
+  COMPLETED
+  IN_PROGRESS
+  PENDING
+  DELAYED
+}
+
+// Timeline Milestone Model
+model TimelineMilestone {
+  id              String          @id @default(uuid())
+  propertyId      String
+  phase           String          // e.g., "Foundation", "Structure", "MEP Systems"
+  title           String
+  description     String?         @db.Text
+  status          MilestoneStatus @default(PENDING)
+  completedDate   DateTime?
+  estimatedDate   String?
+  orderIndex      Int             @default(0)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId])
+  @@index([status])
+  @@index([orderIndex])
+  @@map("timeline_milestone")
+}
+
+// Addon Category Enum
+enum AddonCategory {
+  UPGRADE
+  SMART_HOME
+  OUTDOOR
+  VEHICLE
+  SECURITY
+  OTHER
+}
+
+// Addon Offer Model
+model AddonOffer {
+  id          String        @id @default(uuid())
+  title       String
+  description String        @db.Text
+  imageUrl    String?
+  icon        String?       // Icon name for frontend
+  price       Float?
+  category    AddonCategory @default(OTHER)
+  isActive    Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([isActive])
+  @@index([category])
+  @@map("addon_offer")
+}
+
+// Payment Status Enum
+enum PaymentStatus {
+  PENDING
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+// Payment Type Enum
+enum PaymentType {
+  INSTALLMENT
+  MAINTENANCE_FEE
+  SERVICE_CHARGE
+  ADDON_PAYMENT
+  OTHER
+}
+
+// Payment Model
+model Payment {
+  id                 String        @id @default(uuid())
+  userId             String
+  propertyId         String?
+  amount             Float
+  currency           String        @default("AED")
+  paymentType        PaymentType
+  status             PaymentStatus @default(PENDING)
+  dueDate            DateTime?
+  paidDate           DateTime?
+  description        String?       @db.Text
+  invoiceNumber      String?
+  receiptUrl         String?
+  installmentNumber  Int?          // e.g., 1, 2, 3, 4
+  totalInstallments  Int?          // e.g., 10 (total number of installments)
+  percentage         Float?        // e.g., 10.0 (10% of total)
+  
+  // Payment Gateway Tracking Fields
+  transactionId      String?       @unique     // Safe tracking from Stripe/Bank
+  paymentMethod      String?                   // e.g., "Apple Pay", "Visa"
+  paymentGateway     String?                   // e.g., "Stripe"
+
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  property Property? @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([propertyId])
+  @@index([status])
+  @@index([dueDate])
+  @@map("payment")
+}
+
+// Notification Type Enum
+enum NotificationType {
+  PAYMENT
+  DOCUMENT
+  UNIT_UPDATE
+  COMPANY_NEWS
+  SYSTEM
+}
+
+// Notification Model
+model Notification {
+  id              String           @id @default(uuid())
+  userId          String
+  title           String
+  message         String           @db.Text
+  type            NotificationType @default(SYSTEM)
+  isRead          Boolean          @default(false)
+  relatedEntityId String?          // Optional link to paymentId, documentId, etc.
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt(sort: Desc)])
+  @@index([isRead])
+  @@map("notification")
+}
+
+// AI Design Studio Models
+model SavedDesign {
+  id          String   @id @default(uuid())
+  userId      String
+  imageUrl    String
+  roomType    String   // e.g. "Living Room", "Kitchen"
+  designStyle String   // e.g. "Modern Minimalist", "Bohemian"
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt(sort: Desc)])
+  @@map("saved_design")
 }

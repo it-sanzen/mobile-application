@@ -66,7 +66,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
         width: double.infinity,
         height: double.infinity,
         decoration: const BoxDecoration(
-          gradient: AppColors.primaryGradient,
+          gradient: AppColors.luxuryGradient,
         ),
         child: AnimatedBuilder(
           animation: _controller,

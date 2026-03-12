@@ -124,6 +124,10 @@ export default function Documents() {
                             <div className="hidden sm:flex sm:space-x-4">
                                 <Link to="/dashboard" className="text-gray-500 hover:text-gray-700 px-3 py-2 text-sm font-medium">Users</Link>
                                 <Link to="/documents" className="text-blue-600 border-b-2 border-blue-600 px-3 py-2 text-sm font-medium">Documents</Link>
+                                <Link to="/company-news" className="text-gray-500 hover:text-gray-700 px-3 py-2 text-sm font-medium">Company News</Link>
+                                <Link to="/unit-updates" className="text-gray-500 hover:text-gray-700 px-3 py-2 text-sm font-medium">Unit Updates</Link>
+                                <Link to="/timeline" className="text-gray-500 hover:text-gray-700 px-3 py-2 text-sm font-medium">Timelines</Link>
+                                <Link to="/properties" className="text-gray-500 hover:text-gray-700 px-3 py-2 text-sm font-medium">Properties</Link>
                             </div>
                         </div>
                         <div className="flex items-center space-x-4">

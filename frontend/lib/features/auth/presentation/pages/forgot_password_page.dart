@@ -219,7 +219,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       child: DecoratedBox(
         decoration: BoxDecoration(
           gradient: _isFormValid
-              ? AppColors.primaryGradient
+              ? AppColors.luxuryGradient
               : null,
           color: _isFormValid ? null : AppColors.grey,
           borderRadius: BorderRadius.circular(24),

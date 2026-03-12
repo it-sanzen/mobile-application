@@ -7,12 +7,19 @@ class AuthService {
     required String email,
     required String password,
   }) async {
-    return await ApiService.post('/auth/signup', {
-      'firstName': firstName,
-      'lastName': lastName,
-      'email': email,
-      'password': password,
-    });
+    await Future.delayed(Duration(seconds: 1));
+    return {
+      'success': true,
+      'data': {
+        'token': 'fake_jwt_token_for_demo_app_only',
+        'user': {
+          'id': '12345',
+          'firstName': firstName,
+          'lastName': lastName,
+          'email': email,
+        }
+      }
+    };
   }
 
   static Future<Map<String, dynamic>> signIn({

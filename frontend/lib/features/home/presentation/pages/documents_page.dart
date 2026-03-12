@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/services/api_service.dart';
 import '../../../../core/services/token_service.dart';
 import '../../../../core/models/document.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
+import 'package:http/http.dart' as http;
 
 class DocumentsPage extends StatefulWidget {
   const DocumentsPage({super.key});
@@ -105,39 +102,47 @@ class _DocumentsPageState extends State<DocumentsPage> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                l10n.yourFiles,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.darkGrey.withValues(alpha: 0.7),
+          if (!_isSearching)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.yourFiles,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppColors.darkGrey.withValues(alpha: 0.7),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                l10n.myDocuments,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.black,
+                const SizedBox(height: 2),
+                Text(
+                  l10n.myDocuments,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.black,
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
           if (_isSearching)
             Expanded(
-              child: Padding(
+              child: Container(
+                height: 44,
                 padding: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  color: AppColors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.primaryGreen.withValues(alpha: 0.3)),
+                ),
                 child: TextField(
                   controller: _searchController,
                   autofocus: true,
+                  style: const TextStyle(color: AppColors.black),
                   decoration: InputDecoration(
                     hintText: 'Search documents...',
                     border: InputBorder.none,
+                    icon: Icon(Icons.search, color: AppColors.primaryGreen, size: 20),
                     hintStyle: TextStyle(color: AppColors.darkGrey.withValues(alpha: 0.5)),
                   ),
                   onChanged: (value) {
@@ -148,40 +153,38 @@ class _DocumentsPageState extends State<DocumentsPage> {
                 ),
               ),
             ),
-          Row(
-            children: [
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _isSearching = !_isSearching;
-                    if (!_isSearching) {
-                      _searchController.clear();
-                      _searchQuery = '';
-                    }
-                  });
-                },
-                child: Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: _isSearching ? AppColors.primaryGreen.withValues(alpha: 0.1) : AppColors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: _isSearching ? [] : [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.05),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
+          if (!_isSearching) const Spacer(),
+          const SizedBox(width: 12),
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                _isSearching = !_isSearching;
+                if (!_isSearching) {
+                  _searchController.clear();
+                  _searchQuery = '';
+                }
+              });
+            },
+            child: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: _isSearching ? AppColors.primaryGreen.withValues(alpha: 0.1) : AppColors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: _isSearching ? [] : [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
                   ),
-                  child: Icon(
-                    _isSearching ? Icons.close : Icons.search,
-                    color: AppColors.primaryGreen,
-                    size: 22,
-                  ),
-                ),
+                ],
               ),
-            ],
+              child: Icon(
+                _isSearching ? Icons.close : Icons.search,
+                color: AppColors.primaryGreen,
+                size: 22,
+              ),
+            ),
           ),
         ],
       ),
@@ -381,13 +384,34 @@ class _DocumentsPageState extends State<DocumentsPage> {
           // Download / view button
           GestureDetector(
             onTap: () async {
-              final url = Uri.parse('${ApiService.baseUrl}/documents/${doc.id}/download');
-              if (await canLaunchUrl(url)) {
-                await launchUrl(url);
-              } else {
+              try {
+                // First check if the file is available
+                final downloadUrl = '${ApiService.baseUrl}/documents/${doc.id}/download';
+                final checkResponse = await http.head(Uri.parse(downloadUrl));
+                
+                if (checkResponse.statusCode == 200) {
+                  // File exists, proceed with download
+                  final url = Uri.parse(downloadUrl);
+                  if (await canLaunchUrl(url)) {
+                    await launchUrl(url, mode: LaunchMode.externalApplication);
+                  }
+                } else {
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('File not available for download'),
+                        backgroundColor: Colors.orange,
+                      ),
+                    );
+                  }
+                }
+              } catch (e) {
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Could not open document')),
+                    const SnackBar(
+                      content: Text('Could not download document. File may not exist.'),
+                      backgroundColor: Colors.red,
+                    ),
                   );
                 }
               }

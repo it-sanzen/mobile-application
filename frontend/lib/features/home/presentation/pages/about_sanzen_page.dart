@@ -1,9 +1,36 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/localization/app_localizations.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AboutSanzenPage extends StatelessWidget {
   const AboutSanzenPage({super.key});
+
+  // Social media URLs
+  static const String _websiteUrl = 'https://sanzen.ae/';
+  static const String _instagramUrl = 'https://www.instagram.com/sanzendevelopments/';
+  static const String _linkedinUrl = 'https://www.linkedin.com/company/sanzen-developments';
+
+  Future<void> _launchSocialUrl(BuildContext context, String url) async {
+    final uri = Uri.parse(url);
+    try {
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Could not open link')),
+          );
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error opening link: $e')),
+        );
+      }
+    }
+  }
 
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -121,19 +148,32 @@ class AboutSanzenPage extends StatelessWidget {
             ),
             const SizedBox(height: 12),
 
-            // Social links
+            // Social links with real URLs
             _buildCard(
               title: l10n.followUs,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildSocialIcon(Icons.language, l10n.website),
+                  _buildSocialIcon(
+                    context,
+                    Icons.language,
+                    l10n.website,
+                    _websiteUrl,
+                  ),
                   const SizedBox(width: 20),
-                  _buildSocialIcon(Icons.camera_alt_outlined, 'Instagram'),
+                  _buildSocialIcon(
+                    context,
+                    Icons.camera_alt_outlined,
+                    'Instagram',
+                    _instagramUrl,
+                  ),
                   const SizedBox(width: 20),
-                  _buildSocialIcon(Icons.people_outlined, 'LinkedIn'),
-                  const SizedBox(width: 20),
-                  _buildSocialIcon(Icons.play_circle_outline, 'YouTube'),
+                  _buildSocialIcon(
+                    context,
+                    Icons.people_outlined,
+                    'LinkedIn',
+                    _linkedinUrl,
+                  ),
                 ],
               ),
             ),
@@ -238,27 +278,30 @@ class AboutSanzenPage extends StatelessWidget {
     );
   }
 
-  Widget _buildSocialIcon(IconData icon, String label) {
-    return Column(
-      children: [
-        Container(
-          width: 44,
-          height: 44,
-          decoration: BoxDecoration(
-            color: const Color(0xFFF0F5F1),
-            borderRadius: BorderRadius.circular(12),
+  Widget _buildSocialIcon(BuildContext context, IconData icon, String label, String url) {
+    return GestureDetector(
+      onTap: () => _launchSocialUrl(context, url),
+      child: Column(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: const Color(0xFFF0F5F1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, size: 22, color: AppColors.primaryGreen),
           ),
-          child: Icon(icon, size: 22, color: AppColors.primaryGreen),
-        ),
-        const SizedBox(height: 6),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 10,
-            color: AppColors.darkGrey.withValues(alpha: 0.4),
+          const SizedBox(height: 6),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 10,
+              color: AppColors.darkGrey.withValues(alpha: 0.4),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

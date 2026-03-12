@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/localization/app_localizations.dart';
 import '../../../home/presentation/pages/property_details_page.dart';
+import 'package:mobile_erp_app/features/design_studio/presentation/pages/upload_room_photo_page.dart';
+import '../../../home/data/models/property_model.dart';
+import '../../data/services/properties_service.dart';
 
 class PropertiesPage extends StatefulWidget {
   const PropertiesPage({super.key});
@@ -12,10 +16,50 @@ class PropertiesPage extends StatefulWidget {
 
 class _PropertiesPageState extends State<PropertiesPage> {
   int _selectedFilter = 0;
+  List<PropertyModel> _properties = [];
+  bool _isLoading = true;
+  String? _error;
 
   List<String> _filters(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return [l10n.all, l10n.villa, l10n.apartment, l10n.townhouse];
+  }
+
+  List<String> _filterValues = ['', 'VILLA', 'APARTMENT', 'TOWNHOUSE'];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchProperties();
+  }
+
+  Future<void> _fetchProperties() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      final propertyType = _filterValues[_selectedFilter];
+      final properties = await PropertiesService.getMyProperties(
+        propertyType: propertyType.isEmpty ? null : propertyType,
+      );
+      setState(() {
+        _properties = properties;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
+        _isLoading = false;
+      });
+      print('Error fetching properties: $e');
+    }
+  }
+
+  void _onFilterChanged(int index) {
+    setState(() => _selectedFilter = index);
+    _fetchProperties();
   }
 
   @override
@@ -23,18 +67,39 @@ class _PropertiesPageState extends State<PropertiesPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader(context),
-              _buildQuickStats(context),
-              _buildFilterChips(),
-              _buildPropertyList(context),
-              const SizedBox(height: 24),
-            ],
-          ),
-        ),
+        child: _isLoading
+            ? const Center(
+                child: CircularProgressIndicator(color: AppColors.primaryGreen))
+            : _error != null
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.error_outline,
+                            size: 48, color: Colors.red),
+                        const SizedBox(height: 16),
+                        Text('Error: $_error'),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: _fetchProperties,
+                          child: const Text('Retry'),
+                        ),
+                      ],
+                    ),
+                  )
+                : SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildHeader(context),
+                        _buildQuickStats(context),
+                        _buildAiDesignerCard(context),
+                        _buildFilterChips(),
+                        _buildPropertyList(context),
+                        const SizedBox(height: 24),
+                      ],
+                    ),
+                  ),
       ),
     );
   }
@@ -53,51 +118,117 @@ class _PropertiesPageState extends State<PropertiesPage> {
             children: [
               Text(
                 l10n.myProperties,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: AppColors.black,
                 ),
               ),
-              SizedBox(height: 2),
+              const SizedBox(height: 2),
               Text(
-                '2 ${l10n.propertiesOwned}',
-                style: TextStyle(
+                '${_properties.length} ${l10n.propertiesOwned}',
+                style: const TextStyle(
                   fontSize: 14,
                   color: Color(0xFF8A8A8A),
                 ),
               ),
             ],
           ),
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: const Icon(
-              Icons.search,
-              color: AppColors.primaryGreen,
-              size: 22,
-            ),
-          ),
         ],
       ),
     );
   }
 
+  // ─────────────────────────── AI DESIGNER ──────────────────────────
+
+  Widget _buildAiDesignerCard(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+      child: GestureDetector(
+        onTap: () async {
+          await Navigator.push<Object?>(
+            context,
+            MaterialPageRoute(builder: (_) => const UploadRoomPhotoPage()),
+          );
+        },
+        child: Container(
+          width: double.infinity,
+          height: 90,
+          decoration: BoxDecoration(
+            gradient: AppColors.luxuryGradient,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.1),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              const SizedBox(width: 20),
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: AppColors.white.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.camera_alt,
+                  color: AppColors.gold,
+                  size: 28,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Sanzen Creative Studio',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Upload a photo to build in 3D',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.white.withValues(alpha: 0.8),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(
+                Icons.arrow_forward_ios,
+                color: AppColors.gold,
+                size: 16,
+              ),
+              const SizedBox(width: 20),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+
   // ─────────────────────────── QUICK STATS ──────────────────────────
 
   Widget _buildQuickStats(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final total = _properties.length;
+    final building =
+        _properties.where((p) => p.status == 'UNDER_CONSTRUCTION').length;
+    final ready = _properties.where((p) => p.status == 'READY').length;
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
       child: Row(
@@ -106,7 +237,7 @@ class _PropertiesPageState extends State<PropertiesPage> {
             icon: Icons.apartment,
             iconBg: const Color(0xFFE8F5E9),
             iconColor: AppColors.primaryGreen,
-            value: '2',
+            value: '$total',
             label: l10n.total,
           ),
           const SizedBox(width: 12),
@@ -114,7 +245,7 @@ class _PropertiesPageState extends State<PropertiesPage> {
             icon: Icons.construction,
             iconBg: const Color(0xFFFFF8E1),
             iconColor: AppColors.gold,
-            value: '1',
+            value: '$building',
             label: l10n.building,
           ),
           const SizedBox(width: 12),
@@ -122,7 +253,7 @@ class _PropertiesPageState extends State<PropertiesPage> {
             icon: Icons.check_circle_outline,
             iconBg: const Color(0xFFE8F5E9),
             iconColor: AppColors.success,
-            value: '1',
+            value: '$ready',
             label: l10n.ready,
           ),
         ],
@@ -200,7 +331,7 @@ class _PropertiesPageState extends State<PropertiesPage> {
             return Padding(
               padding: const EdgeInsets.only(right: 10),
               child: GestureDetector(
-                onTap: () => setState(() => _selectedFilter = index),
+                onTap: () => _onFilterChanged(index),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
                   padding:
@@ -248,42 +379,92 @@ class _PropertiesPageState extends State<PropertiesPage> {
   // ──────────────────────── PROPERTY LIST ────────────────────────────
 
   Widget _buildPropertyList(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
+    if (_properties.isEmpty) {
+      return const Padding(
+        padding: EdgeInsets.all(40),
+        child: Center(
+          child: Text(
+            'No properties found',
+            style: TextStyle(
+              fontSize: 16,
+              color: AppColors.lightGrey,
+            ),
+          ),
+        ),
+      );
+    }
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       child: Column(
-        children: [
-          _buildPropertyCard(
-            imageAsset: 'assets/images/zen_lagoons_villa.png',
-            unitBadge: 'UNIT A-204',
-            name: 'Zen Lagoons Villa',
-            location: 'Palm Jumeirah, Dubai',
-            type: l10n.villa,
-            bedrooms: '5 BR',
-            area: '4,200 sqft',
-            status: l10n.underConstruction,
-            statusColor: AppColors.gold,
-            progress: 0.45,
-            progressLabel: '45%',
-            context: context,
-          ),
-          const SizedBox(height: 16),
-          _buildPropertyCard(
-            imageAsset: 'assets/images/pool_addon.png',
-            unitBadge: 'UNIT B-102',
-            name: 'Sukoon Residences',
-            location: 'Dubai Hills Estate',
-            type: l10n.apartment,
-            bedrooms: '3 BR',
-            area: '2,100 sqft',
-            status: l10n.ready,
-            statusColor: AppColors.success,
-            progress: null,
-            progressLabel: null,
-            context: context,
-          ),
-        ],
+        children: _properties
+            .map((property) => Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: _buildPropertyCardFromData(property, context),
+                ))
+            .toList(),
       ),
+    );
+  }
+
+  Widget _buildPropertyCardFromData(
+      PropertyModel property, BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
+    // Map status
+    String statusLabel;
+    Color statusColor;
+    switch (property.status) {
+      case 'UNDER_CONSTRUCTION':
+        statusLabel = l10n.underConstruction;
+        statusColor = AppColors.gold;
+        break;
+      case 'READY':
+        statusLabel = l10n.ready;
+        statusColor = AppColors.success;
+        break;
+      case 'HANDOVER_COMPLETE':
+        statusLabel = 'Handover Complete';
+        statusColor = AppColors.primaryGreen;
+        break;
+      default:
+        statusLabel = property.status;
+        statusColor = AppColors.lightGrey;
+    }
+
+    // Map property type
+    String typeLabel;
+    switch (property.propertyType) {
+      case 'VILLA':
+        typeLabel = l10n.villa;
+        break;
+      case 'APARTMENT':
+        typeLabel = l10n.apartment;
+        break;
+      case 'TOWNHOUSE':
+        typeLabel = l10n.townhouse;
+        break;
+      case 'PENTHOUSE':
+        typeLabel = 'Penthouse';
+        break;
+      default:
+        typeLabel = property.propertyType;
+    }
+
+    return _buildPropertyCard(
+      imageAsset: property.imageUrl ??
+          'assets/images/zen_lagoons_villa.png', // fallback
+      unitBadge: property.unitCode ?? 'UNIT',
+      name: property.name,
+      location: property.location,
+      type: typeLabel,
+      bedrooms: '${property.bedrooms} BR',
+      area: '${property.area.toStringAsFixed(0)} sqft',
+      status: statusLabel,
+      statusColor: statusColor,
+      progress: property.completionPercentage / 100,
+      progressLabel: '${property.completionPercentage.toInt()}%',
+      context: context,
     );
   }
 
@@ -324,13 +505,24 @@ class _PropertiesPageState extends State<PropertiesPage> {
               topRight: Radius.circular(16),
             ),
             child: SizedBox(
-              height: 170,
+              height: 180,
               width: double.infinity,
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Image.asset(imageAsset, fit: BoxFit.cover),
-                  // gradient overlay
+                  imageAsset.startsWith('http')
+                      ? Image.network(imageAsset, fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            decoration: const BoxDecoration(
+                              gradient: AppColors.luxuryGradient,
+                            ),
+                            child: const Icon(Icons.apartment,
+                                size: 50, color: AppColors.white),
+                          );
+                        })
+                      : Image.asset(imageAsset, fit: BoxFit.cover),
+                  // Luxurious gradient overlay
                   Positioned.fill(
                     child: DecoratedBox(
                       decoration: BoxDecoration(
@@ -338,10 +530,10 @@ class _PropertiesPageState extends State<PropertiesPage> {
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           colors: [
-                            Colors.transparent,
-                            Colors.black.withValues(alpha: 0.55),
+                            Colors.black.withValues(alpha: 0.1),
+                            Colors.black.withValues(alpha: 0.75),
                           ],
-                          stops: const [0.35, 1.0],
+                          stops: const [0.4, 1.0],
                         ),
                       ),
                     ),
@@ -448,7 +640,7 @@ class _PropertiesPageState extends State<PropertiesPage> {
                 ),
 
                 // Progress bar (conditional)
-                if (progress != null) ...[
+                if (progress != null && progress > 0) ...[
                   const SizedBox(height: 14),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -524,7 +716,7 @@ class _PropertiesPageState extends State<PropertiesPage> {
                           ),
                           child: Text(
                             l10n.viewDetails,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
                             ),

@@ -30,12 +30,24 @@ class _SignInPageState extends State<SignInPage> {
   @override
   void initState() {
     super.initState();
+    _loadRememberedCredentials();
     _emailFocusNode.addListener(() {
       setState(() => _emailHasFocus = _emailFocusNode.hasFocus);
     });
     _passwordFocusNode.addListener(() {
       setState(() => _passwordHasFocus = _passwordFocusNode.hasFocus);
     });
+  }
+
+  Future<void> _loadRememberedCredentials() async {
+    final credentials = await TokenService.getRememberedCredentials();
+    if (credentials['email'] != null && credentials['email']!.isNotEmpty) {
+      setState(() {
+        _emailController.text = credentials['email']!;
+        _passwordController.text = credentials['password'] ?? '';
+        _rememberMe = true;
+      });
+    }
   }
 
   @override
@@ -105,6 +117,15 @@ class _SignInPageState extends State<SignInPage> {
             unit: userData['unit']?.toString(),
             createdAt: userData['createdAt']?.toString(),
           );
+
+          if (_rememberMe) {
+            await TokenService.saveRememberedCredentials(
+              _emailController.text.trim(),
+              _passwordController.text,
+            );
+          } else {
+            await TokenService.clearRememberedCredentials();
+          }
 
           Navigator.pushAndRemoveUntil(
             context,
@@ -352,7 +373,7 @@ class _SignInPageState extends State<SignInPage> {
       height: 50,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          gradient: AppColors.primaryGradient,
+          gradient: AppColors.luxuryGradient,
           borderRadius: BorderRadius.circular(25),
         ),
         child: ElevatedButton(

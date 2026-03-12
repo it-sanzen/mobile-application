@@ -2,10 +2,20 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Documents from './pages/Documents';
+import CompanyNewsManager from './pages/CompanyNewsManager';
+import UnitUpdatesManager from './pages/UnitUpdatesManager';
+import TimelineManager from './pages/TimelineManager';
+import PropertiesManager from './pages/PropertiesManager';
 
 function PrivateRoute({ children }) {
   const token = localStorage.getItem('admin_token');
-  const user = JSON.parse(localStorage.getItem('admin_user') || '{}');
+  let user = {};
+  try {
+    user = JSON.parse(localStorage.getItem('admin_user') || '{}');
+    if (!user) user = {};
+  } catch (e) {
+    localStorage.removeItem('admin_user');
+  }
 
   if (!token || !user.isAdmin) {
     return <Navigate to="/login" replace />;
@@ -34,7 +44,39 @@ function App() {
             </PrivateRoute>
           }
         />
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route
+          path="/company-news"
+          element={
+            <PrivateRoute>
+              <CompanyNewsManager />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/unit-updates"
+          element={
+            <PrivateRoute>
+              <UnitUpdatesManager />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/timeline"
+          element={
+            <PrivateRoute>
+              <TimelineManager />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/properties"
+          element={
+            <PrivateRoute>
+              <PropertiesManager />
+            </PrivateRoute>
+          }
+        />
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </BrowserRouter>
   );
