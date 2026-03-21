@@ -5,7 +5,7 @@
     "test",
     "dist",
     "**/*spec.ts",
-    "test-prisma.ts",
-    "seed-admin.ts"
+    "*.ts",
+    "prisma/*.ts"
   ]
 }
