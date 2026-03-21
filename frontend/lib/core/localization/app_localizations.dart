@@ -268,6 +268,81 @@ class AppLocalizations {
       'back_to_sign_in': 'Back to Sign In',
       'password': 'Password',
       'email_hint': 'Email',
+      // AI Design Studio
+      'sanzen_creative_studio': 'Sanzen Creative Studio',
+      'upload_photo_to_build': 'Upload a photo to build in 3D',
+      'my_saved_designs': 'My Saved Designs',
+      'no_saved_designs': 'No saved designs yet.',
+      'delete_design_title': 'Delete Design?',
+      'delete_design_content': 'Are you sure you want to permanently delete this AI design?',
+      'cancel': 'Cancel',
+      'delete': 'Delete',
+      'image_saved': 'Image saved to gallery!',
+      'failed_save_image': 'Failed to save image',
+      'error_downloading': 'Error downloading image.',
+      'failed_to_delete': 'Failed to delete',
+      'error_deleting': 'Error deleting design',
+      // Room Designer
+      'room_designer': 'Room Designer',
+      'choose_room': 'Choose a Room',
+      'my_room_designs': 'My Room Designs',
+      'quick_start': 'Quick Start',
+      'shopping_list': 'Shopping List',
+      'total_cost': 'Total Cost',
+      'styles_available': 'styles available',
+      'no_designs_yet': 'No designs yet',
+      'start_designing': 'Start Designing',
+      'living_room': 'Living Room',
+      'bedroom': 'Bedroom',
+      'kitchen': 'Kitchen',
+      'bathroom': 'Bathroom',
+      'office': 'Office',
+      'dining_room': 'Dining Room',
+      // Profile Page extras
+      'phone': 'Phone',
+      'unit': 'Unit',
+      'member_since': 'Member Since',
+      'premium_owner': 'Premium Owner',
+      'sign_out_confirm': 'Are you sure you want to sign out?',
+      // Home Page extras
+      'no_unit_updates': 'No unit updates available',
+      'no_company_news': 'No company news available',
+      'no_addons_available': 'No add-ons available',
+      'new_update': 'New Update',
+      // Timeline Page extras
+      'timeline': 'Timeline',
+      'updates': 'Updates',
+      'retry': 'Retry',
+      'no_timeline_data': 'No timeline data available',
+      'milestones': 'milestones',
+      'delayed': 'Delayed',
+      'recent_updates': 'Recent Updates',
+      'no_construction_updates': 'No construction updates yet',
+      'updates_will_appear': 'Updates will appear here when posted by the team',
+      'load_more': 'Load More',
+      'construction_update': 'Construction Update',
+      // Payments Page
+      'payment_summary': 'Payment Summary',
+      'paid': 'Paid',
+      'pending': 'Pending',
+      'overdue': 'Overdue',
+      'cancelled': 'Cancelled',
+      'no_payments_found': 'No payments found',
+      'amount': 'Amount',
+      'paid_on': 'Paid on',
+      'due_date': 'Due date',
+      'installment': 'Installment',
+      'maintenance_fee': 'Maintenance Fee',
+      'service_charge': 'Service Charge',
+      'addon_payment': 'Add-on Payment',
+      'other': 'Other',
+      'percentage': 'Percentage',
+      'date': 'Date',
+      'invoice': 'Invoice',
+      'redirecting_payment': 'Redirecting to secure payment gateway...',
+      'pay_now': 'Pay Now',
+      'payment_count': 'payment',
+      'payments_count': 'payments',
     },
     'ar': {
       // Profile & Settings
@@ -513,6 +588,94 @@ class AppLocalizations {
       'back_to_sign_in': 'العودة لتسجيل الدخول',
       'password': 'كلمة المرور',
       'email_hint': 'البريد الإلكتروني',
+      // AI Design Studio
+      'sanzen_creative_studio': 'استوديو سانزن الإبداعي',
+      'upload_photo_to_build': 'اصنع تصميمك ثلاثي الأبعاد بصورة',
+      'my_saved_designs': 'تصميماتي المحفوظة',
+      'no_saved_designs': 'لا توجد تصميمات محفوظة حتى الآن.',
+      'delete_design_title': 'حذف التصميم؟',
+      'delete_design_content': 'هل أنت متأكد من أنك تريد حذف هذا التصميم بشكل دائم؟',
+      'cancel': 'إلغاء',
+      'delete': 'حذف',
+      'image_saved': 'تم حفظ الصورة في المعرض!',
+      'failed_save_image': 'فشل في حفظ الصورة',
+      'error_downloading': 'خطأ في تنزيل الصورة.',
+      'failed_to_delete': 'فشل في الحذف',
+      'error_deleting': 'خطأ في حذف التصميم',
+      // Privacy Policy Sections 8-13
+      'pp_s8_title': '٨. حقوقك',
+      'pp_s8': 'الوصول إلى نسخة من بياناتك الشخصية.\n\nتصحيح المعلومات غير الدقيقة أو غير المكتملة.\n\nطلب الحذف ("الحق في النسيان").\n\nسحب الموافقة على الاتصالات التسويقية.\n\nالاعتراض على المعالجة أو تقييدها حيثما ينطبق القانون.\n\nلممارسة حقوقك، تواصل معنا على support@sanzen.ae أو عبر واتساب على ٩٧١ ٥٦ ٦٦٦ ٠٨٣٩+.',
+      'pp_s9_title': '٩. ملفات تعريف الارتباط والتحليلات',
+      'pp_s9': 'قد يستخدم موقعنا ملفات تعريف الارتباط وأدوات التحليل (مثل Google Analytics) لتحسين الأداء وفهم الاستخدام. يمكنك التحكم في ملفات تعريف الارتباط عبر إعدادات المتصفح. لمزيد من التفاصيل، راجع إشعار ملفات تعريف الارتباط إن وُجد.',
+      'pp_s10_title': '١٠. روابط الأطراف الثالثة',
+      'pp_s10': 'قد يحتوي موقعنا على روابط لمواقع خارجية (مثل دوبيزل، بيوت، إنستغرام). نحن غير مسؤولين عن محتواها أو ممارسات الخصوصية الخاصة بها. يرجى مراجعة سياسات الخصوصية لتلك الخدمات.',
+      'pp_s11_title': '١١. خصوصية الأطفال',
+      'pp_s11': 'خدماتنا غير موجهة للأطفال دون سن ١٦ عاماً. نحن لا نجمع بيانات شخصية من الأطفال عن علم. إذا كنت تعتقد أن طفلاً قد قدم لنا بيانات، يرجى التواصل معنا لإزالتها فوراً.',
+      'pp_s12_title': '١٢. النقل الدولي للبيانات',
+      'pp_s12': 'بناءً على موقعك ومزودي خدماتنا، قد تتم معالجة معلوماتك خارج بلدك. نحن نضمن وجود ضمانات مناسبة تتوافق مع القانون المعمول به.',
+      'pp_s13_title': '١٣. التغييرات على هذه السياسة',
+      'pp_s13': 'قد نقوم بتحديث سياسة الخصوصية هذه لتعكس الميزات الجديدة أو المتطلبات القانونية أو التحسينات الأمنية. سيتم نشر أحدث نسخة على هذه الصفحة مع تاريخ "آخر تحديث".',
+      // Profile Page extras
+      'phone': 'الهاتف',
+      'unit': 'الوحدة',
+      'member_since': 'عضو منذ',
+      'premium_owner': 'مالك مميز',
+      'sign_out_confirm': 'هل أنت متأكد من أنك تريد تسجيل الخروج؟',
+      // Home Page extras
+      'no_unit_updates': 'لا توجد تحديثات للوحدة',
+      'no_company_news': 'لا توجد أخبار للشركة',
+      'no_addons_available': 'لا توجد إضافات متاحة',
+      'new_update': 'تحديث جديد',
+      // Timeline Page extras
+      'timeline': 'الجدول الزمني',
+      'updates': 'التحديثات',
+      'retry': 'إعادة المحاولة',
+      'no_timeline_data': 'لا توجد بيانات للجدول الزمني',
+      'milestones': 'مراحل',
+      'delayed': 'متأخر',
+      'recent_updates': 'آخر التحديثات',
+      'no_construction_updates': 'لا توجد تحديثات بناء بعد',
+      'updates_will_appear': 'ستظهر التحديثات هنا عند نشرها من قبل الفريق',
+      'load_more': 'تحميل المزيد',
+      'construction_update': 'تحديث البناء',
+      // Payments Page
+      'payment_summary': 'ملخص المدفوعات',
+      'paid': 'مدفوع',
+      'pending': 'قيد الانتظار',
+      'overdue': 'متأخر',
+      'cancelled': 'ملغي',
+      'no_payments_found': 'لم يتم العثور على مدفوعات',
+      'amount': 'المبلغ',
+      'paid_on': 'تم الدفع في',
+      'due_date': 'تاريخ الاستحقاق',
+      'installment': 'قسط',
+      'maintenance_fee': 'رسوم الصيانة',
+      'service_charge': 'رسوم الخدمة',
+      'addon_payment': 'دفعة إضافية',
+      'other': 'أخرى',
+      'percentage': 'النسبة',
+      'date': 'التاريخ',
+      'invoice': 'الفاتورة',
+      'redirecting_payment': 'جاري التحويل إلى بوابة الدفع الآمنة...',
+      'pay_now': 'ادفع الآن',
+      'payment_count': 'دفعة',
+      'payments_count': 'دفعات',
+      // Room Designer
+      'room_designer': 'مصمم الغرف',
+      'choose_room': 'اختر غرفة',
+      'my_room_designs': 'تصاميم غرفي',
+      'quick_start': 'بداية سريعة',
+      'shopping_list': 'قائمة التسوق',
+      'total_cost': 'التكلفة الإجمالية',
+      'styles_available': 'أنماط متاحة',
+      'no_designs_yet': 'لا توجد تصاميم بعد',
+      'start_designing': 'ابدأ التصميم',
+      'living_room': 'غرفة المعيشة',
+      'bedroom': 'غرفة النوم',
+      'kitchen': 'المطبخ',
+      'bathroom': 'الحمام',
+      'office': 'المكتب',
+      'dining_room': 'غرفة الطعام',
     },
   };
 
@@ -773,6 +936,80 @@ class AppLocalizations {
   String get backToSignIn => _t('back_to_sign_in', 'Back to Sign In');
   String get passwordHint => _t('password', 'Password');
   String get emailHint => _t('email_hint', 'Email');
+  // AI Design Studio
+  String get sanzenCreativeStudio => _t('sanzen_creative_studio', 'Sanzen Creative Studio');
+  String get uploadPhotoToBuild => _t('upload_photo_to_build', 'Upload a photo to build in 3D');
+  String get mySavedDesigns => _t('my_saved_designs', 'My Saved Designs');
+  String get noSavedDesigns => _t('no_saved_designs', 'No saved designs yet.');
+  String get deleteDesignTitle => _t('delete_design_title', 'Delete Design?');
+  String get deleteDesignContent => _t('delete_design_content', 'Are you sure you want to permanently delete this AI design?');
+  String get cancel => _t('cancel', 'Cancel');
+  String get deleteAction => _t('delete', 'Delete');
+  String get imageSaved => _t('image_saved', 'Image saved to gallery!');
+  String get failedSaveImage => _t('failed_save_image', 'Failed to save image');
+  String get errorDownloading => _t('error_downloading', 'Error downloading image.');
+  String get failedToDelete => _t('failed_to_delete', 'Failed to delete');
+  String get errorDeleting => _t('error_deleting', 'Error deleting design');
+  // Room Designer
+  String get roomDesigner => _t('room_designer', 'Room Designer');
+  String get chooseRoom => _t('choose_room', 'Choose a Room');
+  String get myRoomDesigns => _t('my_room_designs', 'My Room Designs');
+  String get quickStart => _t('quick_start', 'Quick Start');
+  String get shoppingList => _t('shopping_list', 'Shopping List');
+  String get totalCost => _t('total_cost', 'Total Cost');
+  String get stylesAvailable => _t('styles_available', 'styles available');
+  String get noDesignsYet => _t('no_designs_yet', 'No designs yet');
+  String get startDesigning => _t('start_designing', 'Start Designing');
+  String get livingRoom => _t('living_room', 'Living Room');
+  String get bedroom => _t('bedroom', 'Bedroom');
+  String get kitchen => _t('kitchen', 'Kitchen');
+  String get bathroom => _t('bathroom', 'Bathroom');
+  String get office => _t('office', 'Office');
+  String get diningRoom => _t('dining_room', 'Dining Room');
+  // Profile extras
+  String get phone => _t('phone', 'Phone');
+  String get unit => _t('unit', 'Unit');
+  String get memberSince => _t('member_since', 'Member Since');
+  String get premiumOwner => _t('premium_owner', 'Premium Owner');
+  String get signOutConfirm => _t('sign_out_confirm', 'Are you sure you want to sign out?');
+  // Home extras
+  String get noUnitUpdates => _t('no_unit_updates', 'No unit updates available');
+  String get noCompanyNews => _t('no_company_news', 'No company news available');
+  String get noAddonsAvailable => _t('no_addons_available', 'No add-ons available');
+  String get newUpdate => _t('new_update', 'New Update');
+  // Timeline extras
+  String get timeline => _t('timeline', 'Timeline');
+  String get updates => _t('updates', 'Updates');
+  String get retry => _t('retry', 'Retry');
+  String get noTimelineData => _t('no_timeline_data', 'No timeline data available');
+  String get milestonesLabel => _t('milestones', 'milestones');
+  String get delayed => _t('delayed', 'Delayed');
+  String get recentUpdates => _t('recent_updates', 'Recent Updates');
+  String get noConstructionUpdates => _t('no_construction_updates', 'No construction updates yet');
+  String get updatesWillAppear => _t('updates_will_appear', 'Updates will appear here when posted by the team');
+  String get loadMore => _t('load_more', 'Load More');
+  String get constructionUpdate => _t('construction_update', 'Construction Update');
+  // Payments extras
+  String get paymentSummary => _t('payment_summary', 'Payment Summary');
+  String get paid => _t('paid', 'Paid');
+  String get pending => _t('pending', 'Pending');
+  String get overdue => _t('overdue', 'Overdue');
+  String get cancelled => _t('cancelled', 'Cancelled');
+  String get noPaymentsFound => _t('no_payments_found', 'No payments found');
+  String get amount => _t('amount', 'Amount');
+  String get paidOn => _t('paid_on', 'Paid on');
+  String get dueDate => _t('due_date', 'Due date');
+  String get installment => _t('installment', 'Installment');
+  String get maintenanceFee => _t('maintenance_fee', 'Maintenance Fee');
+  String get serviceCharge => _t('service_charge', 'Service Charge');
+  String get addonPayment => _t('addon_payment', 'Add-on Payment');
+  String get other => _t('other', 'Other');
+  String get percentageLabel => _t('percentage', 'Percentage');
+  String get dateLabel => _t('date', 'Date');
+  String get invoiceLabel => _t('invoice', 'Invoice');
+  String get redirectingPayment => _t('redirecting_payment', 'Redirecting to secure payment gateway...');
+  String get payNow => _t('pay_now', 'Pay Now');
+  String paymentCount(int count) => count != 1 ? _t('payments_count', 'payments') : _t('payment_count', 'payment');
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

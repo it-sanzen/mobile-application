@@ -13,6 +13,7 @@ import '../../data/models/property_model.dart';
 import '../../data/models/unit_update_model.dart';
 import '../../data/models/company_news_model.dart';
 import '../../../../core/services/token_service.dart';
+import '../../../../core/services/api_service.dart';
 import '../../../../core/models/addon_offer.dart';
 import '../../../../core/services/addon_offers_service.dart';
 
@@ -562,7 +563,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         padding: const EdgeInsets.fromLTRB(20, 40, 20, 40),
         child: Center(
           child: Text(
-            'No unit updates available',
+            AppLocalizations.of(context).noUnitUpdates,
             style: TextStyle(
               fontSize: 14,
               color: AppColors.darkGrey.withValues(alpha: 0.6),
@@ -619,7 +620,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         padding: const EdgeInsets.fromLTRB(20, 40, 20, 40),
         child: Center(
           child: Text(
-            'No company news available',
+            AppLocalizations.of(context).noCompanyNews,
             style: TextStyle(
               fontSize: 14,
               color: AppColors.darkGrey.withValues(alpha: 0.6),
@@ -791,12 +792,12 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           ),
           const SizedBox(height: 14),
           _addonOffers.isEmpty
-              ? const SizedBox(
+              ? SizedBox(
                   height: 240,
                   child: Center(
                     child: Text(
-                      'No add-ons available',
-                      style: TextStyle(
+                      AppLocalizations.of(context).noAddonsAvailable,
+                      style: const TextStyle(
                         fontSize: 14,
                         color: AppColors.lightGrey,
                       ),
@@ -910,10 +911,33 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 fit: StackFit.expand,
                 children: [
                   if (imageAsset != null)
-                    Image.asset(
-                      imageAsset,
-                      fit: BoxFit.cover,
-                    )
+                    imageAsset.startsWith('/uploads') || imageAsset.startsWith('http')
+                      ? Image.network(
+                          imageAsset.startsWith('http')
+                            ? imageAsset
+                            : '${ApiService.baseUrl.replaceAll('/api/v1', '')}$imageAsset',
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => Container(
+                            color: const Color(0xFF3E8E6B),
+                            child: Center(
+                              child: iconEmoji != null
+                                ? Text(iconEmoji, style: const TextStyle(fontSize: 40))
+                                : Icon(placeholderIcon ?? Icons.extension, size: 40, color: Colors.white.withValues(alpha: 0.6)),
+                            ),
+                          ),
+                        )
+                      : Image.asset(
+                          imageAsset,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => Container(
+                            color: const Color(0xFF3E8E6B),
+                            child: Center(
+                              child: iconEmoji != null
+                                ? Text(iconEmoji, style: const TextStyle(fontSize: 40))
+                                : Icon(placeholderIcon ?? Icons.extension, size: 40, color: Colors.white.withValues(alpha: 0.6)),
+                            ),
+                          ),
+                        )
                   else
                     Container(
                       decoration: BoxDecoration(
@@ -988,7 +1012,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                   if (price != null) ...[
                     const SizedBox(height: 6),
                     Text(
-                      '\$${price.toStringAsFixed(0)}',
+                      'AED ${price.toStringAsFixed(0)}',
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
@@ -1214,8 +1238,8 @@ class _AnimatedNotificationOverlayState extends State<AnimatedNotificationOverla
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'New Update',
+                          Text(
+                            AppLocalizations.of(context).newUpdate,
                             style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,

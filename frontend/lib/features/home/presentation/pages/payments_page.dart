@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/models/payment_model.dart';
 import '../../../../core/services/payments_service.dart';
@@ -18,7 +19,6 @@ class _PaymentsPageState extends State<PaymentsPage> with SingleTickerProviderSt
   String? _error;
   int _selectedFilter = 0;
 
-  final List<String> _filters = ['All', 'Pending', 'Paid', 'Overdue'];
   final List<String?> _filterValues = [null, 'PENDING', 'PAID', 'OVERDUE'];
 
   @override
@@ -76,8 +76,8 @@ class _PaymentsPageState extends State<PaymentsPage> with SingleTickerProviderSt
           icon: const Icon(Icons.arrow_back_ios, color: AppColors.darkGrey, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Payments',
+        title: Text(
+          AppLocalizations.of(context).payments,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
@@ -99,7 +99,7 @@ class _PaymentsPageState extends State<PaymentsPage> with SingleTickerProviderSt
                       const SizedBox(height: 16),
                       ElevatedButton(
                         onPressed: _fetchData,
-                        child: const Text('Retry'),
+                        child: Text(AppLocalizations.of(context).retry),
                       ),
                     ],
                   ),
@@ -126,8 +126,8 @@ class _PaymentsPageState extends State<PaymentsPage> with SingleTickerProviderSt
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Payment Summary',
+        Text(
+          AppLocalizations.of(context).paymentSummary,
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
@@ -138,7 +138,7 @@ class _PaymentsPageState extends State<PaymentsPage> with SingleTickerProviderSt
         Row(
           children: [
             _buildSummaryCard(
-              label: 'Total',
+              label: AppLocalizations.of(context).all,
               amount: _summary!.total,
               count: _summary!.paymentCount,
               color: AppColors.primaryGreen,
@@ -146,7 +146,7 @@ class _PaymentsPageState extends State<PaymentsPage> with SingleTickerProviderSt
             ),
             const SizedBox(width: 12),
             _buildSummaryCard(
-              label: 'Paid',
+              label: AppLocalizations.of(context).paid,
               amount: _summary!.paid,
               count: _summary!.paidCount,
               color: AppColors.success,
@@ -158,7 +158,7 @@ class _PaymentsPageState extends State<PaymentsPage> with SingleTickerProviderSt
         Row(
           children: [
             _buildSummaryCard(
-              label: 'Pending',
+              label: AppLocalizations.of(context).pending,
               amount: _summary!.pending,
               count: _summary!.pendingCount,
               color: AppColors.gold,
@@ -166,7 +166,7 @@ class _PaymentsPageState extends State<PaymentsPage> with SingleTickerProviderSt
             ),
             const SizedBox(width: 12),
             _buildSummaryCard(
-              label: 'Overdue',
+              label: AppLocalizations.of(context).overdue,
               amount: _summary!.overdue,
               count: _summary!.overdueCount,
               color: Colors.red,
@@ -234,7 +234,7 @@ class _PaymentsPageState extends State<PaymentsPage> with SingleTickerProviderSt
               ),
             ),
             Text(
-              '$count payment${count != 1 ? 's' : ''}',
+              '$count ${AppLocalizations.of(context).paymentCount(count)}',
               style: TextStyle(
                 fontSize: 11,
                 color: AppColors.darkGrey.withValues(alpha: 0.5),
@@ -247,11 +247,13 @@ class _PaymentsPageState extends State<PaymentsPage> with SingleTickerProviderSt
   }
 
   Widget _buildFilterChips() {
+    final l10n = AppLocalizations.of(context);
+    final filters = [l10n.all, l10n.pending, l10n.paid, l10n.overdue];
     return SizedBox(
       height: 38,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: _filters.length,
+        itemCount: filters.length,
         itemBuilder: (context, index) {
           final isSelected = _selectedFilter == index;
           return Padding(
@@ -270,7 +272,7 @@ class _PaymentsPageState extends State<PaymentsPage> with SingleTickerProviderSt
                   ),
                 ),
                 child: Text(
-                  _filters[index],
+                  filters[index],
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
@@ -287,11 +289,11 @@ class _PaymentsPageState extends State<PaymentsPage> with SingleTickerProviderSt
 
   Widget _buildPaymentsList() {
     if (_payments.isEmpty) {
-      return const Center(
+      return Center(
         child: Padding(
-          padding: EdgeInsets.all(40),
+          padding: const EdgeInsets.all(40),
           child: Text(
-            'No payments found',
+            AppLocalizations.of(context).noPaymentsFound,
             style: TextStyle(
               fontSize: 16,
               color: AppColors.lightGrey,
@@ -312,6 +314,7 @@ class _PaymentsPageState extends State<PaymentsPage> with SingleTickerProviderSt
   }
 
   Widget _buildPaymentCard(PaymentModel payment) {
+    final l10n = AppLocalizations.of(context);
     Color statusColor;
     String statusLabel;
     IconData statusIcon;
@@ -319,22 +322,22 @@ class _PaymentsPageState extends State<PaymentsPage> with SingleTickerProviderSt
     switch (payment.status) {
       case PaymentStatus.paid:
         statusColor = AppColors.success;
-        statusLabel = 'Paid';
+        statusLabel = l10n.paid;
         statusIcon = Icons.check_circle;
         break;
       case PaymentStatus.pending:
         statusColor = AppColors.gold;
-        statusLabel = 'Pending';
+        statusLabel = l10n.pending;
         statusIcon = Icons.schedule;
         break;
       case PaymentStatus.overdue:
         statusColor = Colors.red;
-        statusLabel = 'Overdue';
+        statusLabel = l10n.overdue;
         statusIcon = Icons.warning;
         break;
       case PaymentStatus.cancelled:
         statusColor = AppColors.lightGrey;
-        statusLabel = 'Cancelled';
+        statusLabel = l10n.cancelled;
         statusIcon = Icons.cancel;
         break;
     }
@@ -342,19 +345,19 @@ class _PaymentsPageState extends State<PaymentsPage> with SingleTickerProviderSt
     String typeLabel;
     switch (payment.paymentType) {
       case PaymentType.installment:
-        typeLabel = 'Installment';
+        typeLabel = l10n.installment;
         break;
       case PaymentType.maintenanceFee:
-        typeLabel = 'Maintenance Fee';
+        typeLabel = l10n.maintenanceFee;
         break;
       case PaymentType.serviceCharge:
-        typeLabel = 'Service Charge';
+        typeLabel = l10n.serviceCharge;
         break;
       case PaymentType.addonPayment:
-        typeLabel = 'Add-on Payment';
+        typeLabel = l10n.addonPayment;
         break;
       case PaymentType.other:
-        typeLabel = 'Other';
+        typeLabel = l10n.other;
         break;
     }
 
@@ -434,7 +437,7 @@ class _PaymentsPageState extends State<PaymentsPage> with SingleTickerProviderSt
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Amount',
+                    l10n.amount,
                     style: TextStyle(
                       fontSize: 11,
                       color: AppColors.darkGrey.withValues(alpha: 0.5),
@@ -456,7 +459,7 @@ class _PaymentsPageState extends State<PaymentsPage> with SingleTickerProviderSt
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      payment.status == PaymentStatus.paid ? 'Paid on' : 'Due date',
+                      payment.status == PaymentStatus.paid ? l10n.paidOn : l10n.dueDate,
                       style: TextStyle(
                         fontSize: 11,
                         color: AppColors.darkGrey.withValues(alpha: 0.5),
@@ -494,7 +497,7 @@ class _PaymentsPageState extends State<PaymentsPage> with SingleTickerProviderSt
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       _buildInstallmentDetail(
-                        'Installment',
+                        l10n.installment,
                         '${payment.installmentNumber}/${payment.totalInstallments}',
                         Icons.format_list_numbered,
                       ),
@@ -504,7 +507,7 @@ class _PaymentsPageState extends State<PaymentsPage> with SingleTickerProviderSt
                         color: AppColors.primaryGreen.withValues(alpha: 0.2),
                       ),
                       _buildInstallmentDetail(
-                        'Percentage',
+                        l10n.percentageLabel,
                         '${payment.percentage?.toStringAsFixed(1)}%',
                         Icons.pie_chart_outline,
                       ),
@@ -520,7 +523,7 @@ class _PaymentsPageState extends State<PaymentsPage> with SingleTickerProviderSt
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       _buildInstallmentDetail(
-                        'Date',
+                        l10n.dateLabel,
                         payment.dueDate != null
                             ? '${payment.dueDate!.day}/${payment.dueDate!.month}/${payment.dueDate!.year}'
                             : 'TBD',
@@ -532,7 +535,7 @@ class _PaymentsPageState extends State<PaymentsPage> with SingleTickerProviderSt
                         color: AppColors.primaryGreen.withValues(alpha: 0.2),
                       ),
                       _buildInstallmentDetail(
-                        'Amount',
+                        l10n.amount,
                         'AED ${payment.amount.toStringAsFixed(0)}',
                         Icons.attach_money,
                       ),
@@ -560,7 +563,7 @@ class _PaymentsPageState extends State<PaymentsPage> with SingleTickerProviderSt
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    'Invoice: ${payment.invoiceNumber}',
+                    '${l10n.invoiceLabel}: ${payment.invoiceNumber}',
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w500,
@@ -579,8 +582,8 @@ class _PaymentsPageState extends State<PaymentsPage> with SingleTickerProviderSt
               child: ElevatedButton(
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Redirecting to secure payment gateway...'),
+                    SnackBar(
+                      content: Text(l10n.redirectingPayment),
                       backgroundColor: AppColors.primaryGreen,
                     ),
                   );
@@ -593,8 +596,8 @@ class _PaymentsPageState extends State<PaymentsPage> with SingleTickerProviderSt
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text(
-                  'Pay Now',
+                child: Text(
+                  l10n.payNow,
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,

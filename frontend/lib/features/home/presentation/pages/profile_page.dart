@@ -10,6 +10,7 @@ import 'privacy_policy_page.dart';
 import 'about_sanzen_page.dart';
 import 'payments_page.dart';
 import '../../../../features/design_studio/presentation/pages/my_saved_designs_page.dart';
+import '../../../../features/room_designer/presentation/pages/designer_home_page.dart';
 
 import '../../../../core/services/token_service.dart';
 import '../../../../core/localization/app_localizations.dart';
@@ -190,7 +191,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           const SizedBox(width: 5),
           Text(
-            'Premium Owner',
+            AppLocalizations.of(context).premiumOwner,
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
@@ -210,16 +211,16 @@ class _ProfilePageState extends State<ProfilePage> {
         children: [
           _SectionTitle(title: AppLocalizations.of(context).personalDetails),
           const SizedBox(height: 16),
-          _buildInfoRow(Icons.phone_outlined, 'Phone', _userPhone),
+          _buildInfoRow(Icons.phone_outlined, AppLocalizations.of(context).phone, _userPhone),
           _buildInfoDivider(),
           _buildInfoRow(
-              Icons.location_on_outlined, 'Address', _userAddress),
+              Icons.location_on_outlined, AppLocalizations.of(context).address, _userAddress),
           _buildInfoDivider(),
           _buildInfoRow(
-              Icons.apartment_outlined, 'Unit', _userUnit),
+              Icons.apartment_outlined, AppLocalizations.of(context).unit, _userUnit),
           _buildInfoDivider(),
           _buildInfoRow(
-              Icons.calendar_today_outlined, 'Member Since', _userJoinedDate),
+              Icons.calendar_today_outlined, AppLocalizations.of(context).memberSince, _userJoinedDate),
         ],
       ),
     );
@@ -304,17 +305,8 @@ class _ProfilePageState extends State<ProfilePage> {
           _buildMenuDivider(),
           _buildMenuItem(
             context,
-            Icons.design_services_outlined,
-            'My Saved Designs',
-            const Color(0xFFF1F0FE),
-            const Color(0xFF6C63FF),
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MySavedDesignsPage())),
-          ),
-          _buildMenuDivider(),
-          _buildMenuItem(
-            context,
             Icons.lock_outline_rounded,
-            'Change Password',
+            l10n.changePassword,
             const Color(0xFFFAF6EE),
             AppColors.gold,
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ChangePasswordPage())),
@@ -323,7 +315,7 @@ class _ProfilePageState extends State<ProfilePage> {
           _buildMenuItem(
             context,
             Icons.payment_rounded,
-            'Payments',
+            l10n.payments,
             const Color(0xFFE8F5E9),
             AppColors.primaryGreen,
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PaymentsPage())),
@@ -479,7 +471,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
               content: Text(
-                'Are you sure you want to sign out?',
+                l10n.signOutConfirm,
                 style: TextStyle(
                   fontSize: 14,
                   color: AppColors.darkGrey.withValues(alpha: 0.6),
@@ -489,7 +481,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 TextButton(
                   onPressed: () => Navigator.pop(ctx),
                   child: Text(
-                    'Cancel',
+                    l10n.cancel,
                     style: TextStyle(
                       color: AppColors.darkGrey.withValues(alpha: 0.5),
                       fontWeight: FontWeight.w500,

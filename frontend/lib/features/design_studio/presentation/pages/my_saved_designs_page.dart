@@ -8,6 +8,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/services/api_service.dart';
+import '../../../../core/localization/app_localizations.dart';
 
 class MySavedDesignsPage extends StatefulWidget {
   const MySavedDesignsPage({super.key});
@@ -71,12 +72,13 @@ class _MySavedDesignsPageState extends State<MySavedDesignsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: AppBar(
-        title: const Text(
-          'My Saved Designs',
-          style: TextStyle(
+        title: Text(
+          l10n.mySavedDesigns,
+          style: const TextStyle(
             color: AppColors.black,
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -91,10 +93,10 @@ class _MySavedDesignsPageState extends State<MySavedDesignsPage> {
           : _error != null
               ? Center(child: Text('Error: $_error', style: const TextStyle(color: Colors.red)))
               : _designs.isEmpty
-                  ? const Center(
+                  ? Center(
                       child: Text(
-                        'No saved designs yet.',
-                        style: TextStyle(fontSize: 16, color: AppColors.grey),
+                        l10n.noSavedDesigns,
+                        style: const TextStyle(fontSize: 16, color: AppColors.grey),
                       ),
                     )
                   : GridView.builder(
@@ -166,6 +168,7 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
   bool _isDeleting = false;
 
   Future<void> _downloadImage() async {
+    final l10n = AppLocalizations.of(context);
     setState(() => _isDownloading = true);
     try {
       var response = await Dio().get(
@@ -181,24 +184,67 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
       if (mounted) {
         if (result['isSuccess'] == true) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Image saved to gallery!')),
+            SnackBar(content: Text(l10n.imageSaved)),
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-             SnackBar(content: Text('Failed to save image: ${result['errorMessage']}')),
+             SnackBar(content: Text('${l10n.failedSaveImage}: ${result['errorMessage']}')),
           );
         }
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Error downloading image.')),
+          SnackBar(content: Text(l10n.errorDownloading)),
         );
       }
     } finally {
       if (mounted) {
         setState(() => _isDownloading = false);
       }
+    }
+  }
+
+  Future<void> _deleteDesign() async {
+    final l10n = AppLocalizations.of(context);
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.deleteDesignTitle),
+        content: Text(l10n.deleteDesignContent),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.deleteAction, style: const TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    setState(() => _isDeleting = true);
+    try {
+      final response = await ApiService.delete('/ai-designer/my-designs/${widget.design['id']}');
+      if (response['success'] == true) {
+        widget.onDelete();
+        if (mounted) Navigator.pop(context); // close full screen
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(response['error'] ?? l10n.failedToDelete)),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.errorDeleting)),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isDeleting = false);
     }
   }
 
@@ -224,6 +270,15 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
                   icon: const Icon(Icons.delete_outline, color: Colors.white),
                   onPressed: _deleteDesign,
                 ),
+          _isDownloading
+              ? const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                  ),
+                )
               : IconButton(
                   icon: const Icon(Icons.download, color: Colors.white),
                   onPressed: _downloadImage,

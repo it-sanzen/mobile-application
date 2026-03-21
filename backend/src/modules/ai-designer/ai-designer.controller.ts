@@ -21,27 +21,37 @@ export const storage = {
 export class AiDesignerController {
     constructor(private readonly aiDesignerService: AiDesignerService) { }
 
-    @Post('generate')
+    @Post('generate-3d')
     @UseGuards(JwtAuthGuard)
     @UseInterceptors(FileInterceptor('image', storage))
-    async generateDesign(
+    async generate3D(
         @Req() req,
         @UploadedFile() file: Express.Multer.File,
-        @Body() body: { roomType: string; designStyle: string; shouldMock?: string }
     ) {
-        // Construct the URL where this file can be accessed publicly 
-        // (Assuming the backend serves the /uploads directory statically)
-        const baseUrl = process.env.BACKEND_URL || `http://${req.headers.host}`;
-        const sourceImageUrl = `${baseUrl}/uploads/ai-designs/${file.filename}`;
+        if (!file) {
+            throw new Error("An image must be uploaded to generate a 3D object.");
+        }
 
-        const isMocking = body.shouldMock === 'true' || true; // Force mock for now
+        const sourceImagePath = `./uploads/ai-designs/${file.filename}`;
 
-        return this.aiDesignerService.generateDesign(
+        return this.aiDesignerService.generate3DObject(
             req.user.userId,
-            sourceImageUrl,
-            body.roomType,
-            body.designStyle,
-            isMocking
+            sourceImagePath
+        );
+    }
+
+    @Post('generate-3d-from-text')
+    async generate3DFromText(
+        @Req() req,
+        @Body('prompt') prompt: string,
+    ) {
+        if (!prompt || typeof prompt !== 'string') {
+            throw new Error("A text prompt must be provided to generate a 3D object.");
+        }
+
+        return this.aiDesignerService.generate3DObjectFromText(
+            req.user?.userId || '54f3b7d7-f145-43c0-aa1e-c295025642ee', // Bypass JWT for standalone React testing
+            prompt
         );
     }
 

@@ -22,7 +22,7 @@ async function seedZenlagoonData() {
         console.log('Creating Zenlagoon Villa property...');
         const property = await prisma.property.create({
             data: {
-                name: 'Zenlagoon Villa',
+                name: 'Sukoon by Sanzen',
                 location: 'Sharjah Waterfront',
                 propertyType: 'VILLA',
                 bedrooms: 4,

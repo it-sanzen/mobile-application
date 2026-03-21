@@ -2,7 +2,7 @@
 node_modules/
 .dart_tool/
 .packages
-claude/
+.claude/
 
 # Environment
 .env
@@ -13,6 +13,10 @@ claude/
 build/
 dist/
 *.js.map
+
+# Keep backend/public tracked (needed for deployment)
+!backend/public/
+!backend/public/**
 
 # IDE
 .idea/
@@ -39,3 +43,22 @@ coverage/
 # Generated
 *.g.dart
 *.freezed.dart
+
+# Junk files
+nul
+admin-panel/src/nul
+
+# Uploaded files
+backend/uploads/
+
+# Eval system (auto-generated)
+self-improving-eval/eval-results.json
+self-improving-eval/improvement-prompt.md
+self-improving-eval/changelog.md
+
+# Temp/dev files
+*.glb
+logcat.txt
+backend/nest_logs.txt
+backend/test_pipeline.ts
+create_bedroom.py

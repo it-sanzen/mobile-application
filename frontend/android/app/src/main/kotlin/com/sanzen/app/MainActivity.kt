@@ -1,4 +1,4 @@
-package com.yourcompany.mobile_erp_app
+package com.sanzen.app
 
 import io.flutter.embedding.android.FlutterActivity
 

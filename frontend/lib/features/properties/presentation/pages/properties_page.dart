@@ -3,7 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/localization/app_localizations.dart';
 import '../../../home/presentation/pages/property_details_page.dart';
-import 'package:mobile_erp_app/features/design_studio/presentation/pages/upload_room_photo_page.dart';
+import 'package:mobile_erp_app/features/room_designer/presentation/pages/designer_home_page.dart';
 import '../../../home/data/models/property_model.dart';
 import '../../data/services/properties_service.dart';
 
@@ -142,14 +142,32 @@ class _PropertiesPageState extends State<PropertiesPage> {
   // ─────────────────────────── AI DESIGNER ──────────────────────────
 
   Widget _buildAiDesignerCard(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
       child: GestureDetector(
         onTap: () async {
-          await Navigator.push<Object?>(
+          final resultUrl = await Navigator.push<Object?>(
             context,
-            MaterialPageRoute(builder: (_) => const UploadRoomPhotoPage()),
+            MaterialPageRoute(builder: (_) => const DesignerHomePage()),
           );
+          
+          if (resultUrl != null && mounted) {
+            showDialog(
+              context: context,
+              builder: (ctx) => AlertDialog(
+                backgroundColor: AppColors.offWhite,
+                title: const Text('Sanzen AI Result'),
+                content: const Text('Your redesigned AI Image has been successfully generated and saved to your "My Saved Designs" gallery!'),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(ctx),
+                    child: const Text('Awesome!', style: TextStyle(color: AppColors.gold, fontWeight: FontWeight.bold)),
+                  ),
+                ],
+              ),
+            );
+          }
         },
         child: Container(
           width: double.infinity,
@@ -187,9 +205,9 @@ class _PropertiesPageState extends State<PropertiesPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Sanzen Creative Studio',
-                      style: TextStyle(
+                    Text(
+                      l10n.sanzenCreativeStudio,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
                         color: AppColors.white,
@@ -197,7 +215,7 @@ class _PropertiesPageState extends State<PropertiesPage> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Upload a photo to build in 3D',
+                      l10n.uploadPhotoToBuild,
                       style: TextStyle(
                         fontSize: 12,
                         color: AppColors.white.withValues(alpha: 0.8),
@@ -453,7 +471,7 @@ class _PropertiesPageState extends State<PropertiesPage> {
 
     return _buildPropertyCard(
       imageAsset: property.imageUrl ??
-          'assets/images/zen_lagoons_villa.png', // fallback
+          'assets/images/sukoon_by_sanzen.png', // fallback
       unitBadge: property.unitCode ?? 'UNIT',
       name: property.name,
       location: property.location,

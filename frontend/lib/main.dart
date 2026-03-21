@@ -47,6 +47,14 @@ class MyApp extends StatelessWidget {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
+          builder: (context, child) {
+            // Force LTR layout direction even for Arabic
+            // Only the text content is translated, layout stays LTR
+            return Directionality(
+              textDirection: TextDirection.ltr,
+              child: child!,
+            );
+          },
           home: const SplashPage(),
         );
       },
