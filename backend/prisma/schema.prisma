@@ -25,10 +25,10 @@ model User {
   unitUpdates      UnitUpdate[]
   notifications    Notification[]
   payments         Payment[]
-  savedDesigns     SavedDesign[]
   userProperties   UserProperty[]
-  userDesigns      UserDesign[]
-  wishlists        Wishlist[]
+  changeRequests   ChangeRequest[]
+  referralCodes    ReferralCode[]
+  referrals        Referral[]
 
   @@index([email])
 }
@@ -111,6 +111,7 @@ model Property {
   payments             Payment[]
   timelineMilestones   TimelineMilestone[]
   userProperties       UserProperty[]
+  changeRequests       ChangeRequest[]
 
   @@index([status])
   @@index([propertyType])
@@ -252,145 +253,6 @@ model Notification {
   @@map("notification")
 }
 
-model SavedDesign {
-  id          String   @id @default(uuid())
-  userId      String
-  imageUrl    String
-  roomType    String
-  designStyle String
-  createdAt   DateTime @default(now())
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@index([createdAt(sort: Desc)])
-  @@map("saved_design")
-}
-
-model ShowroomTemplate {
-  id              String          @id @default(uuid())
-  name            String
-  description     String?
-  roomType        RoomType
-  style           ShowroomStyle
-  furnishingLevel FurnishingLevel @default(EMPTY)
-  thumbnailUrl    String?
-  modelUrl        String
-  previewImages   String[]        @default([])
-  floorDimensions Json?
-  defaultItems    Json?
-  isActive        Boolean         @default(true)
-  sortOrder       Int             @default(0)
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  userDesigns     UserDesign[]
-
-  @@index([roomType])
-  @@index([style])
-  @@index([furnishingLevel])
-  @@index([isActive])
-  @@map("showroom_template")
-}
-
-model FurnitureProduct {
-  id            String          @id @default(uuid())
-  name          String
-  description   String?
-  category      ProductCategory
-  subcategory   String?
-  brand         String?
-  price         Float?
-  currency      String          @default("AED")
-  thumbnailUrl  String
-  modelUrl      String
-  dimensions    Json?
-  colorOptions  Json?
-  tags          String[]        @default([])
-  isActive      Boolean         @default(true)
-  isFeatured    Boolean         @default(false)
-  sortOrder     Int             @default(0)
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  designItems   DesignItem[]
-  wishlistItems WishlistItem[]
-
-  @@index([category])
-  @@index([isActive])
-  @@index([isFeatured])
-  @@index([price])
-  @@map("furniture_product")
-}
-
-model UserDesign {
-  id           String           @id @default(uuid())
-  userId       String
-  showroomId   String
-  name         String
-  thumbnailUrl String?
-  sceneState   Json?
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
-  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  showroom     ShowroomTemplate @relation(fields: [showroomId], references: [id])
-  items        DesignItem[]
-  wishlist     Wishlist?
-
-  @@index([userId])
-  @@index([showroomId])
-  @@index([updatedAt(sort: Desc)])
-  @@map("user_design")
-}
-
-model DesignItem {
-  id        String           @id @default(uuid())
-  designId  String
-  productId String
-  positionX Float            @default(0)
-  positionY Float            @default(0)
-  positionZ Float            @default(0)
-  rotationX Float            @default(0)
-  rotationY Float            @default(0)
-  rotationZ Float            @default(0)
-  scaleX    Float            @default(1)
-  scaleY    Float            @default(1)
-  scaleZ    Float            @default(1)
-  colorOption String?
-  createdAt DateTime         @default(now())
-  design    UserDesign       @relation(fields: [designId], references: [id], onDelete: Cascade)
-  product   FurnitureProduct @relation(fields: [productId], references: [id])
-
-  @@index([designId])
-  @@index([productId])
-  @@map("design_item")
-}
-
-model Wishlist {
-  id        String         @id @default(uuid())
-  designId  String         @unique
-  userId    String
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
-  design    UserDesign     @relation(fields: [designId], references: [id], onDelete: Cascade)
-  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  items     WishlistItem[]
-
-  @@index([userId])
-  @@map("wishlist")
-}
-
-model WishlistItem {
-  id         String           @id @default(uuid())
-  wishlistId String
-  productId  String
-  quantity   Int              @default(1)
-  notes      String?
-  createdAt  DateTime         @default(now())
-  wishlist   Wishlist         @relation(fields: [wishlistId], references: [id], onDelete: Cascade)
-  product    FurnitureProduct @relation(fields: [productId], references: [id])
-
-  @@unique([wishlistId, productId])
-  @@index([wishlistId])
-  @@map("wishlist_item")
-}
 
 enum UpdateType {
   ELECTRICAL
@@ -460,6 +322,8 @@ enum NotificationType {
   COMPANY_NEWS
   CONSTRUCTION
   SYSTEM
+  CHANGE_REQUEST
+  REFERRAL
 }
 
 enum PhotoType {
@@ -468,40 +332,90 @@ enum PhotoType {
   PROGRESS
 }
 
-enum ProductCategory {
-  SOFA
-  BED
-  TABLE
-  CHAIR
-  STORAGE
-  LIGHTING
-  RUG
-  DECOR
-  PLANT
-  KITCHEN_FIXTURE
-  BATHROOM_FIXTURE
+
+// ─────────────── Change Requests ───────────────
+
+enum ChangeRequestCategory {
+  STRUCTURAL
+  INTERIOR
+  ELECTRICAL
+  PLUMBING
+  LAYOUT
+  MATERIAL
+  OTHER
 }
 
-enum RoomType {
-  LIVING_ROOM
-  BEDROOM
-  KITCHEN
-  BATHROOM
-  OFFICE
-  DINING_ROOM
+enum ChangeRequestStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
 }
 
-enum ShowroomStyle {
-  MODERN
-  SCANDINAVIAN
-  MINIMALIST
-  TRADITIONAL
-  INDUSTRIAL
-  BOHEMIAN
+model ChangeRequest {
+  id             String                @id @default(uuid())
+  userId         String
+  propertyId     String
+  title          String
+  description    String
+  category       ChangeRequestCategory
+  status         ChangeRequestStatus   @default(SUBMITTED)
+  adminNotes     String?
+  costImpact     Float?
+  timelineImpact String?
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+  user           User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  property       Property              @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([propertyId])
+  @@index([status])
+  @@index([createdAt(sort: Desc)])
+  @@map("change_request")
 }
 
-enum FurnishingLevel {
-  EMPTY
-  SEMI_FURNISHED
-  FULLY_FURNISHED
+// ─────────────── Referrals ───────────────
+
+enum ReferralStatus {
+  PENDING
+  VERIFIED
+  REWARD_APPLIED
+  REJECTED
+}
+
+model ReferralCode {
+  id        String     @id @default(uuid())
+  userId    String
+  code      String     @unique
+  createdAt DateTime   @default(now())
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  referrals Referral[]
+
+  @@index([userId])
+  @@index([code])
+  @@map("referral_code")
+}
+
+model Referral {
+  id                   String         @id @default(uuid())
+  referrerId           String
+  referralCodeId       String
+  referredName         String
+  referredPhone        String
+  referredEmail        String?
+  status               ReferralStatus @default(PENDING)
+  rewardAmount         Float          @default(50000)
+  appliedToInstallment Int?
+  adminNotes           String?
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+  referrer             User           @relation(fields: [referrerId], references: [id], onDelete: Cascade)
+  referralCode         ReferralCode   @relation(fields: [referralCodeId], references: [id])
+
+  @@index([referrerId])
+  @@index([referralCodeId])
+  @@index([status])
+  @@index([createdAt(sort: Desc)])
+  @@map("referral")
 }

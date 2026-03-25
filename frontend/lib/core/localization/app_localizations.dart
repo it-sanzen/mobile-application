@@ -268,11 +268,7 @@ class AppLocalizations {
       'back_to_sign_in': 'Back to Sign In',
       'password': 'Password',
       'email_hint': 'Email',
-      // AI Design Studio
-      'sanzen_creative_studio': 'Sanzen Creative Studio',
-      'upload_photo_to_build': 'Upload a photo to build in 3D',
-      'my_saved_designs': 'My Saved Designs',
-      'no_saved_designs': 'No saved designs yet.',
+
       'delete_design_title': 'Delete Design?',
       'delete_design_content': 'Are you sure you want to permanently delete this AI design?',
       'cancel': 'Cancel',
@@ -588,11 +584,7 @@ class AppLocalizations {
       'back_to_sign_in': 'العودة لتسجيل الدخول',
       'password': 'كلمة المرور',
       'email_hint': 'البريد الإلكتروني',
-      // AI Design Studio
-      'sanzen_creative_studio': 'استوديو سانزن الإبداعي',
-      'upload_photo_to_build': 'اصنع تصميمك ثلاثي الأبعاد بصورة',
-      'my_saved_designs': 'تصميماتي المحفوظة',
-      'no_saved_designs': 'لا توجد تصميمات محفوظة حتى الآن.',
+
       'delete_design_title': 'حذف التصميم؟',
       'delete_design_content': 'هل أنت متأكد من أنك تريد حذف هذا التصميم بشكل دائم؟',
       'cancel': 'إلغاء',
@@ -936,11 +928,7 @@ class AppLocalizations {
   String get backToSignIn => _t('back_to_sign_in', 'Back to Sign In');
   String get passwordHint => _t('password', 'Password');
   String get emailHint => _t('email_hint', 'Email');
-  // AI Design Studio
-  String get sanzenCreativeStudio => _t('sanzen_creative_studio', 'Sanzen Creative Studio');
-  String get uploadPhotoToBuild => _t('upload_photo_to_build', 'Upload a photo to build in 3D');
-  String get mySavedDesigns => _t('my_saved_designs', 'My Saved Designs');
-  String get noSavedDesigns => _t('no_saved_designs', 'No saved designs yet.');
+
   String get deleteDesignTitle => _t('delete_design_title', 'Delete Design?');
   String get deleteDesignContent => _t('delete_design_content', 'Are you sure you want to permanently delete this AI design?');
   String get cancel => _t('cancel', 'Cancel');

@@ -9,8 +9,8 @@ import 'help_support_page.dart';
 import 'privacy_policy_page.dart';
 import 'about_sanzen_page.dart';
 import 'payments_page.dart';
-import '../../../../features/design_studio/presentation/pages/my_saved_designs_page.dart';
-import '../../../../features/room_designer/presentation/pages/designer_home_page.dart';
+import '../../../change_requests/presentation/pages/change_requests_page.dart';
+import '../../../referrals/presentation/pages/referral_dashboard_page.dart';
 
 import '../../../../core/services/token_service.dart';
 import '../../../../core/localization/app_localizations.dart';
@@ -319,6 +319,24 @@ class _ProfilePageState extends State<ProfilePage> {
             const Color(0xFFE8F5E9),
             AppColors.primaryGreen,
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PaymentsPage())),
+          ),
+          _buildMenuDivider(),
+          _buildMenuItem(
+            context,
+            Icons.edit_note_rounded,
+            'Change Requests',
+            const Color(0xFFE3F2FD),
+            AppColors.info,
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ChangeRequestsPage())),
+          ),
+          _buildMenuDivider(),
+          _buildMenuItem(
+            context,
+            Icons.card_giftcard_rounded,
+            'Refer & Earn',
+            const Color(0xFFFFF8E1),
+            AppColors.gold,
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ReferralDashboardPage())),
           ),
           _buildMenuDivider(),
           _buildMenuItem(

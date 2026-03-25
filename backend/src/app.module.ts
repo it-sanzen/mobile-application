@@ -18,11 +18,8 @@ import { PropertiesModule } from './modules/properties/properties.module';
 import { TimelineModule } from './modules/timeline/timeline.module';
 import { AddonOffersModule } from './modules/addon-offers/addon-offers.module';
 import { PaymentsModule } from './modules/payments/payments.module';
-import { AiDesignerModule } from './modules/ai-designer/ai-designer.module';
-import { ShowroomsModule } from './modules/showrooms/showrooms.module';
-import { ProductsModule } from './modules/products/products.module';
-import { UserDesignsModule } from './modules/user-designs/user-designs.module';
-import { WishlistModule } from './modules/wishlist/wishlist.module';
+import { ChangeRequestsModule } from './modules/change-requests/change-requests.module';
+import { ReferralsModule } from './modules/referrals/referrals.module';
 
 @Module({
   imports: [
@@ -45,11 +42,8 @@ import { WishlistModule } from './modules/wishlist/wishlist.module';
     TimelineModule,
     AddonOffersModule,
     PaymentsModule,
-    AiDesignerModule,
-    ShowroomsModule,
-    ProductsModule,
-    UserDesignsModule,
-    WishlistModule,
+    ChangeRequestsModule,
+    ReferralsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

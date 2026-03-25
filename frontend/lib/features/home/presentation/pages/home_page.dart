@@ -16,6 +16,8 @@ import '../../../../core/services/token_service.dart';
 import '../../../../core/services/api_service.dart';
 import '../../../../core/models/addon_offer.dart';
 import '../../../../core/services/addon_offers_service.dart';
+import '../../../change_requests/presentation/pages/change_requests_page.dart';
+import '../../../referrals/presentation/pages/referral_dashboard_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -128,6 +130,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
             if (_property != null) _buildProgressSection(),
             _buildUpdateTabs(),
             _buildUpdatesList(),
+            _buildQuickActions(),
             _buildExclusiveAddons(),
             const SizedBox(height: 20),
           ],
@@ -769,6 +772,87 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 ),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuickActions() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Quick Actions',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.black),
+          ),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ChangeRequestsPage())),
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.white,
+                      borderRadius: BorderRadius.circular(14),
+                      boxShadow: [
+                        BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 2)),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: AppColors.info.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(Icons.edit_note, color: AppColors.info, size: 24),
+                        ),
+                        const SizedBox(height: 10),
+                        const Text('Change\nRequests', textAlign: TextAlign.center, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.darkGrey)),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ReferralDashboardPage())),
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.white,
+                      borderRadius: BorderRadius.circular(14),
+                      boxShadow: [
+                        BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 2)),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: AppColors.gold.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(Icons.card_giftcard, color: AppColors.gold, size: 24),
+                        ),
+                        const SizedBox(height: 10),
+                        const Text('Refer &\nEarn', textAlign: TextAlign.center, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.darkGrey)),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),

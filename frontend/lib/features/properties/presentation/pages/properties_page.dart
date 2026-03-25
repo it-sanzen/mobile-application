@@ -3,7 +3,6 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/localization/app_localizations.dart';
 import '../../../home/presentation/pages/property_details_page.dart';
-import 'package:mobile_erp_app/features/room_designer/presentation/pages/designer_home_page.dart';
 import '../../../home/data/models/property_model.dart';
 import '../../data/services/properties_service.dart';
 
@@ -93,7 +92,6 @@ class _PropertiesPageState extends State<PropertiesPage> {
                       children: [
                         _buildHeader(context),
                         _buildQuickStats(context),
-                        _buildAiDesignerCard(context),
                         _buildFilterChips(),
                         _buildPropertyList(context),
                         const SizedBox(height: 24),
@@ -138,105 +136,6 @@ class _PropertiesPageState extends State<PropertiesPage> {
       ),
     );
   }
-
-  // ─────────────────────────── AI DESIGNER ──────────────────────────
-
-  Widget _buildAiDesignerCard(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-      child: GestureDetector(
-        onTap: () async {
-          final resultUrl = await Navigator.push<Object?>(
-            context,
-            MaterialPageRoute(builder: (_) => const DesignerHomePage()),
-          );
-          
-          if (resultUrl != null && mounted) {
-            showDialog(
-              context: context,
-              builder: (ctx) => AlertDialog(
-                backgroundColor: AppColors.offWhite,
-                title: const Text('Sanzen AI Result'),
-                content: const Text('Your redesigned AI Image has been successfully generated and saved to your "My Saved Designs" gallery!'),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(ctx),
-                    child: const Text('Awesome!', style: TextStyle(color: AppColors.gold, fontWeight: FontWeight.bold)),
-                  ),
-                ],
-              ),
-            );
-          }
-        },
-        child: Container(
-          width: double.infinity,
-          height: 90,
-          decoration: BoxDecoration(
-            gradient: AppColors.luxuryGradient,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              const SizedBox(width: 20),
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: AppColors.white.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.camera_alt,
-                  color: AppColors.gold,
-                  size: 28,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      l10n.sanzenCreativeStudio,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      l10n.uploadPhotoToBuild,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.white.withValues(alpha: 0.8),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const Icon(
-                Icons.arrow_forward_ios,
-                color: AppColors.gold,
-                size: 16,
-              ),
-              const SizedBox(width: 20),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
 
   // ─────────────────────────── QUICK STATS ──────────────────────────
 
