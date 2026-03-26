@@ -52,7 +52,13 @@ class MyApp extends StatelessWidget {
             // Only the text content is translated, layout stays LTR
             return Directionality(
               textDirection: TextDirection.ltr,
-              child: child!,
+              // Constrain to mobile width on web/desktop for professional look
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 430),
+                  child: child!,
+                ),
+              ),
             );
           },
           home: const SplashPage(),

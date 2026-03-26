@@ -38,4 +38,22 @@ class ChangeRequestService {
     }
     throw Exception(response['error'] ?? 'Failed to submit change request');
   }
+
+  static Future<ChangeRequestModel> update({
+    required String id,
+    String? title,
+    String? description,
+    String? category,
+  }) async {
+    final body = <String, dynamic>{};
+    if (title != null) body['title'] = title;
+    if (description != null) body['description'] = description;
+    if (category != null) body['category'] = category;
+
+    final response = await ApiService.patch('/change-requests/$id', body);
+    if (response['success'] == true) {
+      return ChangeRequestModel.fromJson(response['data'] as Map<String, dynamic>);
+    }
+    throw Exception(response['error'] ?? 'Failed to update change request');
+  }
 }

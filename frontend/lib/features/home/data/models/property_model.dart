@@ -11,6 +11,14 @@ class PropertyModel {
   final String? currentPhase;
   final String? estimatedCompletion;
   final String unitCode;
+  final String? floor;
+  final String? parking;
+  final String? balcony;
+  final String? furnishedStatus;
+  final List<String> amenities;
+  final double? downPayment;
+  final double? constructionPayment;
+  final double? handoverPayment;
 
   PropertyModel({
     required this.id,
@@ -25,6 +33,14 @@ class PropertyModel {
     this.currentPhase,
     this.estimatedCompletion,
     required this.unitCode,
+    this.floor,
+    this.parking,
+    this.balcony,
+    this.furnishedStatus,
+    this.amenities = const [],
+    this.downPayment,
+    this.constructionPayment,
+    this.handoverPayment,
   });
 
   factory PropertyModel.fromJson(Map<String, dynamic> json) {
@@ -41,6 +57,16 @@ class PropertyModel {
       currentPhase: json['currentPhase'] as String?,
       estimatedCompletion: json['estimatedCompletion'] as String?,
       unitCode: json['unitCode'] as String,
+      floor: json['floor'] as String?,
+      parking: json['parking'] as String?,
+      balcony: json['balcony'] as String?,
+      furnishedStatus: json['furnishedStatus'] as String?,
+      amenities: json['amenities'] != null
+          ? (json['amenities'] as List).map((e) => e as String).toList()
+          : [],
+      downPayment: json['downPayment'] != null ? (json['downPayment'] as num).toDouble() : null,
+      constructionPayment: json['constructionPayment'] != null ? (json['constructionPayment'] as num).toDouble() : null,
+      handoverPayment: json['handoverPayment'] != null ? (json['handoverPayment'] as num).toDouble() : null,
     );
   }
 }

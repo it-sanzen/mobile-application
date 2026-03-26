@@ -3,6 +3,7 @@ import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { AdminGuard } from '../../auth/guards/admin.guard';
 import { ChangeRequestsService } from './change-requests.service';
 import { CreateChangeRequestDto } from './dto/create-change-request.dto';
+import { UpdateChangeRequestDto } from './dto/update-change-request.dto';
 import { UpdateChangeRequestStatusDto } from './dto/update-change-request-status.dto';
 
 @Controller('change-requests')
@@ -37,5 +38,11 @@ export class ChangeRequestsController {
     @UseGuards(JwtAuthGuard, AdminGuard)
     updateStatus(@Param('id') id: string, @Body() dto: UpdateChangeRequestStatusDto) {
         return this.service.updateStatus(id, dto);
+    }
+
+    @Patch(':id')
+    @UseGuards(JwtAuthGuard)
+    update(@Req() req: any, @Param('id') id: string, @Body() dto: UpdateChangeRequestDto) {
+        return this.service.update(id, req.user.userId, dto);
     }
 }

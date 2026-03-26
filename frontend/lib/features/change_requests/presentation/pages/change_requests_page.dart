@@ -3,6 +3,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/models/change_request.dart';
 import '../../data/services/change_request_service.dart';
 import 'submit_change_request_page.dart';
+import 'edit_change_request_page.dart';
 
 class ChangeRequestsPage extends StatefulWidget {
   const ChangeRequestsPage({super.key});
@@ -262,6 +263,97 @@ class _ChangeRequestsPageState extends State<ChangeRequestsPage> {
                     style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.gold),
                   ),
                 ],
+              ),
+            ],
+            // Status message
+            if (request.status == ChangeRequestStatus.underReview) ...[
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: AppColors.warning.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.hourglass_top, size: 14, color: AppColors.warning),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'We are studying your request and will get back to you soon.',
+                        style: TextStyle(fontSize: 12, color: AppColors.darkGrey),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            if (request.status == ChangeRequestStatus.approved) ...[
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: AppColors.success.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.check_circle_outline, size: 14, color: AppColors.success),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Your request has been approved!',
+                        style: TextStyle(fontSize: 12, color: AppColors.darkGrey),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            if (request.status == ChangeRequestStatus.rejected) ...[
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: AppColors.error.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.cancel_outlined, size: 14, color: AppColors.error),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Your request has been rejected.',
+                        style: TextStyle(fontSize: 12, color: AppColors.darkGrey),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            // Edit button for submitted requests only
+            if (request.status == ChangeRequestStatus.submitted) ...[
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                height: 36,
+                child: OutlinedButton.icon(
+                  onPressed: () async {
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => EditChangeRequestPage(request: request)),
+                    );
+                    if (result == true) _fetchRequests();
+                  },
+                  icon: const Icon(Icons.edit_outlined, size: 16),
+                  label: const Text('Edit Request', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.primaryGreen,
+                    side: const BorderSide(color: AppColors.primaryGreen),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                ),
               ),
             ],
           ],

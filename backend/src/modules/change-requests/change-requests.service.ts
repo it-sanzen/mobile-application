@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { CreateChangeRequestDto } from './dto/create-change-request.dto';
+import { UpdateChangeRequestDto } from './dto/update-change-request.dto';
 import { UpdateChangeRequestStatusDto } from './dto/update-change-request-status.dto';
 
 @Injectable()
@@ -32,6 +33,32 @@ export class ChangeRequestsService {
         return this.prisma.changeRequest.findMany({
             where: { userId },
             orderBy: { createdAt: 'desc' },
+            include: {
+                property: { select: { id: true, name: true, location: true } },
+            },
+        });
+    }
+
+    async update(id: string, userId: string, dto: UpdateChangeRequestDto) {
+        const request = await this.prisma.changeRequest.findUnique({ where: { id } });
+        if (!request) {
+            throw new NotFoundException('Change request not found');
+        }
+        if (request.userId !== userId) {
+            throw new NotFoundException('Change request not found');
+        }
+        // Only allow editing if status is SUBMITTED
+        if (request.status !== 'SUBMITTED') {
+            throw new NotFoundException('Cannot edit a request that is already under review or processed');
+        }
+
+        return this.prisma.changeRequest.update({
+            where: { id },
+            data: {
+                ...(dto.title && { title: dto.title }),
+                ...(dto.description && { description: dto.description }),
+                ...(dto.category && { category: dto.category }),
+            },
             include: {
                 property: { select: { id: true, name: true, location: true } },
             },

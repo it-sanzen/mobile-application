@@ -369,6 +369,8 @@ class _PropertiesPageState extends State<PropertiesPage> {
     }
 
     return _buildPropertyCard(
+      propertyId: property.id,
+      propertyModel: property,
       imageAsset: property.imageUrl ??
           'assets/images/sukoon_by_sanzen.png', // fallback
       unitBadge: property.unitCode ?? 'UNIT',
@@ -386,6 +388,8 @@ class _PropertiesPageState extends State<PropertiesPage> {
   }
 
   Widget _buildPropertyCard({
+    String? propertyId,
+    PropertyModel? propertyModel,
     required String imageAsset,
     required String unitBadge,
     required String name,
@@ -609,6 +613,7 @@ class _PropertiesPageState extends State<PropertiesPage> {
                               context,
                               MaterialPageRoute(
                                 builder: (_) => PropertyDetailsPage(
+                                  propertyId: propertyId,
                                   propertyName: name,
                                   location: location,
                                   unitCode: unitBadge,
@@ -619,6 +624,16 @@ class _PropertiesPageState extends State<PropertiesPage> {
                                   statusColor: statusColor,
                                   progress: progress,
                                   imageAsset: imageAsset,
+                                  currentPhase: propertyModel?.currentPhase,
+                                  estimatedCompletion: propertyModel?.estimatedCompletion,
+                                  floor: propertyModel?.floor,
+                                  parking: propertyModel?.parking,
+                                  balcony: propertyModel?.balcony,
+                                  furnishedStatus: propertyModel?.furnishedStatus,
+                                  amenities: propertyModel?.amenities ?? [],
+                                  downPayment: propertyModel?.downPayment,
+                                  constructionPayment: propertyModel?.constructionPayment,
+                                  handoverPayment: propertyModel?.handoverPayment,
                                 ),
                               ),
                             );

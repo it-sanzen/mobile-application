@@ -135,7 +135,7 @@ class _SubmitChangeRequestPageState extends State<SubmitChangeRequestPage> {
                     const SizedBox(height: 24),
 
                     // Property selector
-                    const Text('Property', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                    const Text('Property', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.darkGrey)),
                     const SizedBox(height: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -148,6 +148,7 @@ class _SubmitChangeRequestPageState extends State<SubmitChangeRequestPage> {
                         child: DropdownButton<String>(
                           value: _selectedPropertyId,
                           isExpanded: true,
+                          style: const TextStyle(color: AppColors.darkGrey, fontSize: 14),
                           items: _properties.map((p) {
                             return DropdownMenuItem(
                               value: p.id,
@@ -161,7 +162,7 @@ class _SubmitChangeRequestPageState extends State<SubmitChangeRequestPage> {
                     const SizedBox(height: 20),
 
                     // Category selector
-                    const Text('Category', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                    const Text('Category', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.darkGrey)),
                     const SizedBox(height: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -174,6 +175,7 @@ class _SubmitChangeRequestPageState extends State<SubmitChangeRequestPage> {
                         child: DropdownButton<ChangeRequestCategory>(
                           value: _selectedCategory,
                           isExpanded: true,
+                          style: const TextStyle(color: AppColors.darkGrey, fontSize: 14),
                           items: ChangeRequestCategory.values.map((c) {
                             return DropdownMenuItem(value: c, child: Text(c.label));
                           }).toList(),
@@ -184,7 +186,7 @@ class _SubmitChangeRequestPageState extends State<SubmitChangeRequestPage> {
                     const SizedBox(height: 20),
 
                     // Title
-                    const Text('Title', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                    const Text('Title', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.darkGrey)),
                     const SizedBox(height: 8),
                     TextFormField(
                       controller: _titleController,
@@ -210,7 +212,7 @@ class _SubmitChangeRequestPageState extends State<SubmitChangeRequestPage> {
                     const SizedBox(height: 20),
 
                     // Description
-                    const Text('Description', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                    const Text('Description', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.darkGrey)),
                     const SizedBox(height: 8),
                     TextFormField(
                       controller: _descriptionController,

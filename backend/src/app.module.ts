@@ -20,6 +20,7 @@ import { AddonOffersModule } from './modules/addon-offers/addon-offers.module';
 import { PaymentsModule } from './modules/payments/payments.module';
 import { ChangeRequestsModule } from './modules/change-requests/change-requests.module';
 import { ReferralsModule } from './modules/referrals/referrals.module';
+import { AddonQuotesModule } from './modules/addon-quotes/addon-quotes.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { ReferralsModule } from './modules/referrals/referrals.module';
     PaymentsModule,
     ChangeRequestsModule,
     ReferralsModule,
+    AddonQuotesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

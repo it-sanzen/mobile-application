@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 import '../../../../core/theme/app_colors.dart';
 import 'documents_page.dart';
 import '../../../properties/presentation/pages/properties_page.dart';
@@ -130,7 +131,6 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
             if (_property != null) _buildProgressSection(),
             _buildUpdateTabs(),
             _buildUpdatesList(),
-            _buildQuickActions(),
             _buildExclusiveAddons(),
             const SizedBox(height: 20),
           ],
@@ -265,6 +265,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                     context,
                     MaterialPageRoute(
                       builder: (_) => PropertyDetailsPage(
+                        propertyId: property.id,
                         propertyName: property.name,
                         location: property.location,
                         unitCode: property.unitCode,
@@ -275,6 +276,16 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                         statusColor: statusColor,
                         progress: property.completionPercentage / 100,
                         imageAsset: property.imageUrl ?? 'assets/images/zen_lagoons_villa.png',
+                        currentPhase: property.currentPhase,
+                        estimatedCompletion: property.estimatedCompletion,
+                        floor: property.floor,
+                        parking: property.parking,
+                        balcony: property.balcony,
+                        furnishedStatus: property.furnishedStatus,
+                        amenities: property.amenities,
+                        downPayment: property.downPayment,
+                        constructionPayment: property.constructionPayment,
+                        handoverPayment: property.handoverPayment,
                       ),
                     ),
                   );
@@ -890,14 +901,25 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 )
               : SizedBox(
                   height: 240,
-                  child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: _addonOffers.length,
-                    separatorBuilder: (context, index) => const SizedBox(width: 14),
-                    itemBuilder: (context, index) {
-                      final addon = _addonOffers[index];
-                      return _buildAddonCardFromData(context, addon);
-                    },
+                  child: ScrollConfiguration(
+                    behavior: ScrollConfiguration.of(context).copyWith(
+                      dragDevices: {
+                        PointerDeviceKind.touch,
+                        PointerDeviceKind.mouse,
+                        PointerDeviceKind.trackpad,
+                      },
+                    ),
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      physics: const BouncingScrollPhysics(),
+                      padding: const EdgeInsets.only(right: 20),
+                      itemCount: _addonOffers.length,
+                      separatorBuilder: (context, index) => const SizedBox(width: 14),
+                      itemBuilder: (context, index) {
+                        final addon = _addonOffers[index];
+                        return _buildAddonCardFromData(context, addon);
+                      },
+                    ),
                   ),
                 ),
         ],
@@ -945,8 +967,11 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
     return _buildAddonCard(
       context,
+      addonId: addon.id,
+      addonPrice: addon.price,
       title: addon.title,
       description: displayDescription,
+      fullDescription: addon.description,
       imageAsset: addon.imageUrl,
       offerIcon: offerIcon,
       offerColors: offerColors,
@@ -956,8 +981,11 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   }
 
   Widget _buildAddonCard(BuildContext context, {
+    required String addonId,
+    double? addonPrice,
     required String title,
     required String description,
+    String? fullDescription,
     String? imageAsset,
     IconData? placeholderIcon,
     List<Color>? placeholderColors,
@@ -1114,10 +1142,14 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                         context,
                         MaterialPageRoute(
                           builder: (_) => AddonOfferPage(
+                            addonOfferId: addonId,
                             title: title,
-                            description: description,
+                            description: fullDescription ?? description,
                             icon: offerIcon,
                             gradientColors: offerColors,
+                            price: addonPrice,
+                            imageUrl: imageAsset,
+                            iconEmoji: iconEmoji,
                           ),
                         ),
                       );

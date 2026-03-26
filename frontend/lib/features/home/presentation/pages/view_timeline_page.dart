@@ -2,11 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/models/timeline_milestone.dart';
-import '../../../../core/models/milestone_update.dart';
-import '../../../../core/models/milestone_photo.dart';
 import '../../../../core/services/timeline_service.dart';
-import '../../../../core/services/api_service.dart';
-import '../widgets/before_after_slider.dart';
 
 class ViewTimelinePage extends StatefulWidget {
   final String propertyId;
@@ -22,35 +18,16 @@ class ViewTimelinePage extends StatefulWidget {
   State<ViewTimelinePage> createState() => _ViewTimelinePageState();
 }
 
-class _ViewTimelinePageState extends State<ViewTimelinePage> with SingleTickerProviderStateMixin {
+class _ViewTimelinePageState extends State<ViewTimelinePage> {
   List<TimelineMilestone> _milestones = [];
-  List<MilestoneUpdate> _feedUpdates = [];
   bool _isLoading = true;
-  bool _isFeedLoading = false;
   String? _error;
-  late TabController _tabController;
-  int _feedPage = 1;
-  int _feedTotal = 0;
   int? _expandedMilestoneIndex;
-
-  static const String _baseUrl = 'https://sanzen-new-demo.onrender.com';
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-    _tabController.addListener(() {
-      if (_tabController.index == 1 && _feedUpdates.isEmpty) {
-        _fetchFeed();
-      }
-    });
     _fetchTimeline();
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
   }
 
   List<TimelineMilestone> _getDefaultMilestones() {
@@ -81,28 +58,6 @@ class _ViewTimelinePageState extends State<ViewTimelinePage> with SingleTickerPr
     }
   }
 
-  Future<void> _fetchFeed({bool loadMore = false}) async {
-    if (_isFeedLoading) return;
-    setState(() { _isFeedLoading = true; });
-    try {
-      final page = loadMore ? _feedPage + 1 : 1;
-      final result = await TimelineService.getPropertyFeed(widget.propertyId, page: page);
-      setState(() {
-        final updates = result['data'] as List<MilestoneUpdate>;
-        if (loadMore) {
-          _feedUpdates.addAll(updates);
-        } else {
-          _feedUpdates = updates;
-        }
-        _feedTotal = result['total'] as int;
-        _feedPage = result['page'] as int;
-        _isFeedLoading = false;
-      });
-    } catch (e) {
-      setState(() { _isFeedLoading = false; });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -120,18 +75,6 @@ class _ViewTimelinePageState extends State<ViewTimelinePage> with SingleTickerPr
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.darkGrey),
         ),
         centerTitle: true,
-        bottom: TabBar(
-          controller: _tabController,
-          labelColor: AppColors.primaryGreen,
-          unselectedLabelColor: AppColors.grey,
-          indicatorColor: AppColors.primaryGreen,
-          indicatorWeight: 2.5,
-          labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-          tabs: [
-            Tab(text: l10n.timeline),
-            Tab(text: l10n.updates),
-          ],
-        ),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator(color: AppColors.primaryGreen))
@@ -148,13 +91,7 @@ class _ViewTimelinePageState extends State<ViewTimelinePage> with SingleTickerPr
                     ],
                   ),
                 )
-              : TabBarView(
-                  controller: _tabController,
-                  children: [
-                    _buildTimelineTab(),
-                    _buildFeedTab(),
-                  ],
-                ),
+              : _buildTimelineTab(),
     );
   }
 
@@ -297,9 +234,6 @@ class _ViewTimelinePageState extends State<ViewTimelinePage> with SingleTickerPr
         ? '${milestone.completedDate!.day}/${milestone.completedDate!.month}/${milestone.completedDate!.year}'
         : milestone.estimatedDate ?? 'TBD';
 
-    final hasBeforeAfter = milestone.photos.where((p) => p.photoType == 'BEFORE').isNotEmpty &&
-        milestone.photos.where((p) => p.photoType == 'AFTER').isNotEmpty;
-
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -338,9 +272,7 @@ class _ViewTimelinePageState extends State<ViewTimelinePage> with SingleTickerPr
             child: Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: GestureDetector(
-                onTap: (milestone.updates.isNotEmpty || milestone.photos.isNotEmpty)
-                    ? () => setState(() { _expandedMilestoneIndex = isExpanded ? null : index; })
-                    : null,
+                onTap: null,
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -423,57 +355,6 @@ class _ViewTimelinePageState extends State<ViewTimelinePage> with SingleTickerPr
                         ),
                       ],
 
-                      // Before/After photo thumbnails
-                      if (milestone.photos.isNotEmpty) ...[
-                        const SizedBox(height: 10),
-                        SizedBox(
-                          height: 52,
-                          child: ListView.separated(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: milestone.photos.length + (hasBeforeAfter ? 1 : 0),
-                            separatorBuilder: (_, __) => const SizedBox(width: 6),
-                            itemBuilder: (context, i) {
-                              if (hasBeforeAfter && i == 0) {
-                                return GestureDetector(
-                                  onTap: () => _openBeforeAfter(milestone),
-                                  child: Container(
-                                    width: 52, height: 52,
-                                    decoration: BoxDecoration(
-                                      color: AppColors.gold.withValues(alpha: 0.12),
-                                      borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(color: AppColors.gold.withValues(alpha: 0.3)),
-                                    ),
-                                    child: const Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Icon(Icons.compare, size: 18, color: AppColors.gold),
-                                        Text('B/A', style: TextStyle(fontSize: 8, fontWeight: FontWeight.w700, color: AppColors.gold)),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              }
-                              final photoIndex = hasBeforeAfter ? i - 1 : i;
-                              final photo = milestone.photos[photoIndex];
-                              return GestureDetector(
-                                onTap: () => _openPhotoViewer(photo),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Image.network(
-                                    '$_baseUrl${photo.photoUrl}',
-                                    width: 52, height: 52, fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) => Container(
-                                      width: 52, height: 52, color: AppColors.lightGrey,
-                                      child: const Icon(Icons.broken_image, size: 20, color: AppColors.grey),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-
                       const SizedBox(height: 8),
                       Row(
                         children: [
@@ -482,262 +363,20 @@ class _ViewTimelinePageState extends State<ViewTimelinePage> with SingleTickerPr
                           Text(dateText,
                               style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: AppColors.darkGrey.withValues(alpha: 0.4))),
                           const Spacer(),
-                          if (milestone.updates.isNotEmpty || milestone.photos.isNotEmpty)
-                            Icon(isExpanded ? Icons.expand_less : Icons.expand_more,
-                                size: 18, color: AppColors.grey),
                         ],
                       ),
-
-                      // Expanded updates section
-                      if (isExpanded && milestone.updates.isNotEmpty) ...[
-                        const SizedBox(height: 12),
-                        Container(height: 1, color: AppColors.lightGrey),
-                        const SizedBox(height: 12),
-                        Text(AppLocalizations.of(context).recentUpdates,
-                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.darkGrey.withValues(alpha: 0.6))),
-                        const SizedBox(height: 8),
-                        ...milestone.updates.map((update) => _buildUpdateCard(update)),
-                      ],
                     ],
                   ),
                 ),
               ),
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildUpdateCard(MilestoneUpdate update) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF9F9F9),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.lightGrey.withValues(alpha: 0.5)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.construction, size: 14, color: AppColors.gold),
-              const SizedBox(width: 6),
-              Text(_formatDate(update.createdAt),
-                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.w500, color: AppColors.darkGrey.withValues(alpha: 0.4))),
-            ],
-          ),
-          const SizedBox(height: 6),
-          Text(update.notes, style: const TextStyle(fontSize: 12, color: AppColors.darkGrey, height: 1.4)),
-          if (update.photos.isNotEmpty) ...[
-            const SizedBox(height: 8),
-            SizedBox(
-              height: 60,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: update.photos.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 6),
-                itemBuilder: (context, i) {
-                  final photo = update.photos[i];
-                  return GestureDetector(
-                    onTap: () => _openPhotoViewer(photo),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        '$_baseUrl${photo.photoUrl}',
-                        width: 60, height: 60, fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Container(
-                          width: 60, height: 60, color: AppColors.lightGrey,
-                          child: const Icon(Icons.broken_image, size: 20, color: AppColors.grey),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  // ======================== FEED TAB ========================
-
-  Widget _buildFeedTab() {
-    if (_isFeedLoading && _feedUpdates.isEmpty) {
-      return const Center(child: CircularProgressIndicator(color: AppColors.primaryGreen));
-    }
-
-    if (_feedUpdates.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.article_outlined, size: 48, color: AppColors.lightGrey),
-            const SizedBox(height: 16),
-            Text(AppLocalizations.of(context).noConstructionUpdates,
-                style: TextStyle(fontSize: 16, color: AppColors.darkGrey.withValues(alpha: 0.6))),
-            const SizedBox(height: 8),
-            Text(AppLocalizations.of(context).updatesWillAppear,
-                style: TextStyle(fontSize: 13, color: AppColors.grey)),
-          ],
-        ),
-      );
-    }
-
-    return RefreshIndicator(
-      onRefresh: () => _fetchFeed(),
-      color: AppColors.primaryGreen,
-      child: ListView.builder(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
-        itemCount: _feedUpdates.length + (_feedUpdates.length < _feedTotal ? 1 : 0),
-        itemBuilder: (context, i) {
-          if (i == _feedUpdates.length) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              child: Center(
-                child: _isFeedLoading
-                    ? const CircularProgressIndicator(color: AppColors.primaryGreen)
-                    : TextButton(
-                        onPressed: () => _fetchFeed(loadMore: true),
-                        child: Text(AppLocalizations.of(context).loadMore, style: const TextStyle(color: AppColors.primaryGreen, fontWeight: FontWeight.w600)),
-                      ),
-              ),
-            );
-          }
-          return _buildFeedCard(_feedUpdates[i]);
-        },
-      ),
-    );
-  }
-
-  Widget _buildFeedCard(MilestoneUpdate update) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 10, offset: const Offset(0, 2))],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
-            child: Row(
-              children: [
-                Container(
-                  width: 36, height: 36,
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryGreen.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Icon(Icons.construction, size: 18, color: AppColors.primaryGreen),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        update.milestonePhase != null
-                            ? '${update.milestonePhase}: ${update.milestoneTitle ?? ''}'
-                            : AppLocalizations.of(context).constructionUpdate,
-                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.darkGrey),
-                      ),
-                      Text(_formatDate(update.createdAt),
-                          style: TextStyle(fontSize: 11, color: AppColors.darkGrey.withValues(alpha: 0.4))),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          // Notes
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
-            child: Text(update.notes, style: const TextStyle(fontSize: 13, color: AppColors.darkGrey, height: 1.5)),
-          ),
-          // Photos
-          if (update.photos.isNotEmpty) ...[
-            const SizedBox(height: 10),
-            SizedBox(
-              height: 140,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: update.photos.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 8),
-                itemBuilder: (context, i) {
-                  final photo = update.photos[i];
-                  return GestureDetector(
-                    onTap: () => _openPhotoViewer(photo),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.network(
-                        '$_baseUrl${photo.photoUrl}',
-                        width: 180, height: 140, fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Container(
-                          width: 180, height: 140, color: AppColors.lightGrey,
-                          child: const Icon(Icons.broken_image, size: 32, color: AppColors.grey),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
-          const SizedBox(height: 14),
         ],
       ),
     );
   }
 
   // ======================== HELPERS ========================
-
-  void _openPhotoViewer(MilestonePhoto photo) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => Scaffold(
-          backgroundColor: Colors.black,
-          appBar: AppBar(
-            backgroundColor: Colors.black,
-            iconTheme: const IconThemeData(color: Colors.white),
-            title: Text(photo.caption ?? photo.photoType, style: const TextStyle(color: Colors.white)),
-          ),
-          body: Center(
-            child: InteractiveViewer(
-              child: Image.network(
-                '$_baseUrl${photo.photoUrl}',
-                fit: BoxFit.contain,
-                errorBuilder: (_, __, ___) => const Icon(Icons.broken_image, size: 64, color: Colors.grey),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _openBeforeAfter(TimelineMilestone milestone) {
-    final before = milestone.photos.where((p) => p.photoType == 'BEFORE').first;
-    final after = milestone.photos.where((p) => p.photoType == 'AFTER').first;
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => BeforeAfterSlider(
-          beforeUrl: '$_baseUrl${before.photoUrl}',
-          afterUrl: '$_baseUrl${after.photoUrl}',
-        ),
-      ),
-    );
-  }
 
   String _formatDate(DateTime date) {
     final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];

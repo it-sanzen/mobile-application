@@ -64,6 +64,7 @@ export default function Dashboard() {
                                 <Link to="/unit-updates" className="text-gray-500 hover:text-gray-700 px-3 py-2 text-sm font-medium">Unit Updates</Link>
                                 <Link to="/timeline" className="text-gray-500 hover:text-gray-700 px-3 py-2 text-sm font-medium">Timelines</Link>
                                 <Link to="/properties" className="text-gray-500 hover:text-gray-700 px-3 py-2 text-sm font-medium">Properties</Link>
+                                <Link to="/addon-quotes" className="text-gray-500 hover:text-gray-700 px-3 py-2 text-sm font-medium">Add-on Quotes</Link>
                             </div>
                         </div>
                         <div className="flex items-center space-x-4">

@@ -6,6 +6,7 @@ import CompanyNewsManager from './pages/CompanyNewsManager';
 import UnitUpdatesManager from './pages/UnitUpdatesManager';
 import TimelineManager from './pages/TimelineManager';
 import PropertiesManager from './pages/PropertiesManager';
+import AddonQuotesManager from './pages/AddonQuotesManager';
 
 function PrivateRoute({ children }) {
   const token = localStorage.getItem('admin_token');
@@ -73,6 +74,14 @@ function App() {
           element={
             <PrivateRoute>
               <PropertiesManager />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/addon-quotes"
+          element={
+            <PrivateRoute>
+              <AddonQuotesManager />
             </PrivateRoute>
           }
         />
