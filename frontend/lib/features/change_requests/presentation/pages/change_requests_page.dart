@@ -52,6 +52,8 @@ class _ChangeRequestsPageState extends State<ChangeRequestsPage> {
         return AppColors.success;
       case ChangeRequestStatus.rejected:
         return AppColors.error;
+      case ChangeRequestStatus.completed:
+        return AppColors.primaryGreen;
     }
   }
 
@@ -325,6 +327,28 @@ class _ChangeRequestsPageState extends State<ChangeRequestsPage> {
                     Expanded(
                       child: Text(
                         'Your request has been rejected.',
+                        style: TextStyle(fontSize: 12, color: AppColors.darkGrey),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            if (request.status == ChangeRequestStatus.completed) ...[
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryGreen.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.check_circle, size: 14, color: AppColors.primaryGreen),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Your request has been officially successfully completed.',
                         style: TextStyle(fontSize: 12, color: AppColors.darkGrey),
                       ),
                     ),

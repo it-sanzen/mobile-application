@@ -76,7 +76,7 @@ class _PropertyDetailsPageState extends State<PropertyDetailsPage> {
     try {
       final requests = await ChangeRequestService.getMyRequests();
       setState(() {
-        _recentRequests = requests.take(3).toList();
+        _recentRequests = requests.where((r) => r.status != ChangeRequestStatus.completed).take(3).toList();
         _isLoadingRequests = false;
       });
     } catch (e) {
@@ -94,6 +94,8 @@ class _PropertyDetailsPageState extends State<PropertyDetailsPage> {
         return AppColors.success;
       case ChangeRequestStatus.rejected:
         return AppColors.error;
+      case ChangeRequestStatus.completed:
+        return AppColors.primaryGreen;
     }
   }
 

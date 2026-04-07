@@ -5,6 +5,7 @@ import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/services/api_service.dart';
 import '../../../../core/services/token_service.dart';
 import '../../../../core/models/document.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 
@@ -100,27 +101,31 @@ class _DocumentsPageState extends State<DocumentsPage> {
   Widget _buildHeader(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 12),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (!_isSearching)
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  l10n.yourFiles,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.darkGrey.withValues(alpha: 0.7),
+                  l10n.yourFiles.toUpperCase(),
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 1.2,
+                    color: AppColors.primaryGreen.withValues(alpha: 0.6),
                   ),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 6),
                 Text(
                   l10n.myDocuments,
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.black,
+                  style: GoogleFonts.inter(
+                    fontSize: 32,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.primaryDark,
+                    letterSpacing: -0.5,
                   ),
                 ),
               ],
@@ -128,22 +133,34 @@ class _DocumentsPageState extends State<DocumentsPage> {
           if (_isSearching)
             Expanded(
               child: Container(
-                height: 44,
-                padding: const EdgeInsets.symmetric(horizontal: 12),
+                height: 48,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
                   color: AppColors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.primaryGreen.withValues(alpha: 0.3)),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primaryDark.withValues(alpha: 0.04),
+                      blurRadius: 16,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
                 child: TextField(
                   controller: _searchController,
                   autofocus: true,
-                  style: const TextStyle(color: AppColors.black),
+                  style: GoogleFonts.inter(
+                    fontSize: 15,
+                    color: AppColors.black,
+                  ),
                   decoration: InputDecoration(
                     hintText: 'Search documents...',
                     border: InputBorder.none,
                     icon: Icon(Icons.search, color: AppColors.primaryGreen, size: 20),
-                    hintStyle: TextStyle(color: AppColors.darkGrey.withValues(alpha: 0.5)),
+                    hintStyle: GoogleFonts.inter(
+                      color: AppColors.darkGrey.withValues(alpha: 0.4),
+                      fontSize: 15,
+                    ),
                   ),
                   onChanged: (value) {
                     setState(() {
@@ -154,7 +171,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
               ),
             ),
           if (!_isSearching) const Spacer(),
-          const SizedBox(width: 12),
+          const SizedBox(width: 16),
           GestureDetector(
             onTap: () {
               setState(() {
@@ -166,23 +183,23 @@ class _DocumentsPageState extends State<DocumentsPage> {
               });
             },
             child: Container(
-              width: 40,
-              height: 40,
+              width: 44,
+              height: 44,
               decoration: BoxDecoration(
-                color: _isSearching ? AppColors.primaryGreen.withValues(alpha: 0.1) : AppColors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: _isSearching ? [] : [
+                color: _isSearching ? AppColors.white : AppColors.primaryGreen.withValues(alpha: 0.05),
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: _isSearching ? [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
+                    color: AppColors.primaryDark.withValues(alpha: 0.04),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
                   ),
-                ],
+                ] : [],
               ),
               child: Icon(
                 _isSearching ? Icons.close : Icons.search,
-                color: AppColors.primaryGreen,
-                size: 22,
+                color: AppColors.primaryDark,
+                size: 20,
               ),
             ),
           ),
@@ -194,50 +211,39 @@ class _DocumentsPageState extends State<DocumentsPage> {
   Widget _buildCategoryChips(BuildContext context) {
     final cats = _categories(context);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+      padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
           children: List.generate(cats.length, (index) {
             final isSelected = _selectedCategory == index;
             return Padding(
-              padding: EdgeInsets.only(right: index < cats.length - 1 ? 10 : 0),
+              padding: EdgeInsets.only(right: index < cats.length - 1 ? 12 : 0),
               child: GestureDetector(
                 onTap: () => setState(() => _selectedCategory = index),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                   decoration: BoxDecoration(
-                    color: isSelected ? AppColors.primaryGreen : AppColors.white,
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(
-                      color: isSelected
-                          ? AppColors.primaryGreen
-                          : AppColors.lightGrey,
-                      width: 1,
-                    ),
+                    color: isSelected ? AppColors.primaryDark : const Color(0xFFF3F4F3),
+                    borderRadius: BorderRadius.circular(30),
                     boxShadow: isSelected
                         ? [
                             BoxShadow(
-                              color: AppColors.primaryGreen.withValues(alpha: 0.25),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
+                              color: AppColors.primaryDark.withValues(alpha: 0.15),
+                              blurRadius: 12,
+                              offset: const Offset(0, 4),
                             ),
                           ]
-                        : [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.03),
-                              blurRadius: 4,
-                              offset: const Offset(0, 1),
-                            ),
-                          ],
+                        : [],
                   ),
                   child: Text(
                     cats[index],
-                    style: TextStyle(
+                    style: GoogleFonts.inter(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: isSelected ? AppColors.white : AppColors.darkGrey,
+                      letterSpacing: 0.3,
+                      color: isSelected ? AppColors.white : AppColors.primaryDark.withValues(alpha: 0.6),
                     ),
                   ),
                 ),
@@ -282,56 +288,46 @@ class _DocumentsPageState extends State<DocumentsPage> {
     
     IconData icon = Icons.description;
     Color iconColor = AppColors.primaryGreen;
-    Color iconBgColor = const Color(0xFFE8F5E9);
+    Color iconBgColor = const Color(0xFFF3F4F3);
 
     if (doc.type == 'Receipt') {
       icon = Icons.receipt_long;
-      iconColor = const Color(0xFFE65100);
-      iconBgColor = const Color(0xFFFFF3E0);
     } else if (doc.type == 'NOC') {
       icon = Icons.verified_outlined;
-      iconColor = const Color(0xFF1565C0);
-      iconBgColor = const Color(0xFFE3F2FD);
     } else if (doc.type == 'Title Deed') {
       icon = Icons.landscape_outlined;
-      iconColor = const Color(0xFF2E7D32);
-      iconBgColor = const Color(0xFFE8F5E9);
     } else if (doc.type == 'Identification') {
       icon = Icons.badge_outlined;
-      iconColor = const Color(0xFFC62828);
-      iconBgColor = const Color(0xFFFFEBEE);
     } else if (doc.type == 'Other') {
       icon = Icons.more_horiz;
-      iconColor = const Color(0xFF455A64);
-      iconBgColor = const Color(0xFFECEFF1);
     }
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
+            color: const Color(0xFF191C1C).withValues(alpha: 0.04), // Ambient shadow defined in design system
+            blurRadius: 24,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
       child: Row(
         children: [
-          // Document icon
+          // Luxury Document icon container
           Container(
-            width: 48,
-            height: 48,
+            width: 56,
+            height: 56,
             decoration: BoxDecoration(
               color: iconBgColor,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16),
             ),
-            child: Icon(icon, color: iconColor, size: 24),
+            child: Icon(icon, color: AppColors.primaryDark, size: 24),
           ),
-          const SizedBox(width: 14),
+          const SizedBox(width: 16),
           // Document info
           Expanded(
             child: Column(
@@ -339,41 +335,43 @@ class _DocumentsPageState extends State<DocumentsPage> {
               children: [
                 Text(
                   doc.title,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.black,
+                  style: GoogleFonts.inter(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.primaryDark,
+                    letterSpacing: -0.2,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 8),
                 Row(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.primaryGreen.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        doc.type,
-                        style: const TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.primaryGreen,
-                        ),
+                    Text(
+                      doc.type.toUpperCase(),
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primaryDark.withValues(alpha: 0.6),
+                        letterSpacing: 0.8,
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 12),
+                    Container(
+                      width: 4,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryDark.withValues(alpha: 0.2),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
                     Text(
                       dateStr,
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: AppColors.darkGrey.withValues(alpha: 0.55),
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.primaryDark.withValues(alpha: 0.4),
                       ),
                     ),
                   ],
@@ -381,7 +379,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
               ],
             ),
           ),
-          // Download / view button
+          // Elegant Download Button
           GestureDetector(
             onTap: () async {
               try {
@@ -417,16 +415,17 @@ class _DocumentsPageState extends State<DocumentsPage> {
               }
             },
             child: Container(
-              width: 36,
-              height: 36,
+              margin: const EdgeInsets.only(left: 8),
+              width: 40,
+              height: 40,
               decoration: BoxDecoration(
-                color: AppColors.primaryGreen.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(10),
+                color: AppColors.primaryDark,
+                borderRadius: BorderRadius.circular(12),
               ),
               child: const Icon(
-                Icons.file_download_outlined,
-                color: AppColors.primaryGreen,
-                size: 20,
+                Icons.arrow_downward_rounded,
+                color: AppColors.white,
+                size: 18,
               ),
             ),
           ),

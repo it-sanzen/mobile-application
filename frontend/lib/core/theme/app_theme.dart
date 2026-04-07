@@ -5,8 +5,8 @@ import 'app_colors.dart';
 
 class AppTheme {
   static ThemeData get darkTheme {
-    // Set Outfit as the default font for the entire app
-    final baseTextTheme = GoogleFonts.outfitTextTheme();
+    // Set Inter as the default font for the entire app
+    final baseTextTheme = GoogleFonts.interTextTheme();
 
     return ThemeData(
       useMaterial3: true,
@@ -14,7 +14,7 @@ class AppTheme {
       primaryColor: AppColors.primaryGreen,
       scaffoldBackgroundColor: AppColors.primaryDark,
       // Set default font family globally
-      fontFamily: GoogleFonts.outfit().fontFamily,
+      fontFamily: GoogleFonts.inter().fontFamily,
       colorScheme: const ColorScheme.dark(
         primary: AppColors.primaryGreen,
         secondary: AppColors.gold,
@@ -22,73 +22,73 @@ class AppTheme {
         error: AppColors.error,
       ),
       textTheme: baseTextTheme.copyWith(
-        headlineLarge: GoogleFonts.playfairDisplay(
+        headlineLarge: GoogleFonts.inter(
           fontSize: 32,
           fontWeight: FontWeight.bold,
           color: AppColors.white,
           letterSpacing: -0.5,
         ),
-        headlineMedium: GoogleFonts.playfairDisplay(
+        headlineMedium: GoogleFonts.inter(
           fontSize: 24,
           fontWeight: FontWeight.w600,
           color: AppColors.white,
           letterSpacing: -0.3,
         ),
-        headlineSmall: GoogleFonts.playfairDisplay(
+        headlineSmall: GoogleFonts.inter(
           fontSize: 20,
           fontWeight: FontWeight.w600,
           color: AppColors.white,
           letterSpacing: -0.2,
         ),
-        titleLarge: GoogleFonts.outfit(
+        titleLarge: GoogleFonts.inter(
           fontSize: 18,
           fontWeight: FontWeight.w600,
           color: AppColors.white,
           letterSpacing: -0.2,
         ),
-        titleMedium: GoogleFonts.outfit(
+        titleMedium: GoogleFonts.inter(
           fontSize: 16,
           fontWeight: FontWeight.w500,
           color: AppColors.white,
           letterSpacing: -0.1,
         ),
-        titleSmall: GoogleFonts.outfit(
+        titleSmall: GoogleFonts.inter(
           fontSize: 14,
           fontWeight: FontWeight.w500,
           color: AppColors.white,
           letterSpacing: 0,
         ),
-        bodyLarge: GoogleFonts.outfit(
+        bodyLarge: GoogleFonts.inter(
           fontSize: 16,
           fontWeight: FontWeight.normal,
           color: AppColors.white,
           height: 1.5,
         ),
-        bodyMedium: GoogleFonts.outfit(
+        bodyMedium: GoogleFonts.inter(
           fontSize: 14,
           fontWeight: FontWeight.normal,
           color: AppColors.white,
           height: 1.5,
         ),
-        bodySmall: GoogleFonts.outfit(
+        bodySmall: GoogleFonts.inter(
           fontSize: 12,
           fontWeight: FontWeight.normal,
           color: AppColors.grey,
           height: 1.4,
         ),
-        labelLarge: GoogleFonts.outfit(
+        labelLarge: GoogleFonts.inter(
           fontSize: 14,
           fontWeight: FontWeight.w600,
           color: AppColors.white,
           letterSpacing: 0.3,
         ),
-        labelMedium: GoogleFonts.outfit(
+        labelMedium: GoogleFonts.inter(
           fontSize: 12,
           fontWeight: FontWeight.w500,
           color: AppColors.white,
           letterSpacing: 0.2,
         ),
-        labelSmall: GoogleFonts.outfit(
+        labelSmall: GoogleFonts.inter(
           fontSize: 11,
           fontWeight: FontWeight.w500,
           color: AppColors.grey,
@@ -100,7 +100,7 @@ class AppTheme {
         elevation: 0,
         systemOverlayStyle: SystemUiOverlayStyle.light,
         iconTheme: const IconThemeData(color: AppColors.white),
-        titleTextStyle: GoogleFonts.outfit(
+        titleTextStyle: GoogleFonts.inter(
           color: AppColors.white,
           fontSize: 18,
           fontWeight: FontWeight.w600,
@@ -115,7 +115,7 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          textStyle: GoogleFonts.outfit(
+          textStyle: GoogleFonts.inter(
             fontSize: 16,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.2,
@@ -130,7 +130,7 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          textStyle: GoogleFonts.outfit(
+          textStyle: GoogleFonts.inter(
             fontSize: 16,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.2,
@@ -140,7 +140,7 @@ class AppTheme {
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: AppColors.gold,
-          textStyle: GoogleFonts.outfit(
+          textStyle: GoogleFonts.inter(
             fontSize: 14,
             fontWeight: FontWeight.w500,
           ),
@@ -149,7 +149,7 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.whiteOverlay,
-        hintStyle: GoogleFonts.outfit(
+        hintStyle: GoogleFonts.inter(
           color: AppColors.white.withOpacity(0.6),
           fontSize: 14,
           fontWeight: FontWeight.w400,
@@ -179,11 +179,11 @@ class AppTheme {
         backgroundColor: AppColors.white,
         selectedItemColor: AppColors.gold,
         unselectedItemColor: AppColors.grey,
-        selectedLabelStyle: GoogleFonts.outfit(
+        selectedLabelStyle: GoogleFonts.inter(
           fontSize: 11,
           fontWeight: FontWeight.w600,
         ),
-        unselectedLabelStyle: GoogleFonts.outfit(
+        unselectedLabelStyle: GoogleFonts.inter(
           fontSize: 11,
           fontWeight: FontWeight.w400,
         ),
@@ -192,11 +192,11 @@ class AppTheme {
       ),
       // Tab bar theme
       tabBarTheme: TabBarThemeData(
-        labelStyle: GoogleFonts.outfit(
+        labelStyle: GoogleFonts.inter(
           fontSize: 14,
           fontWeight: FontWeight.w600,
         ),
-        unselectedLabelStyle: GoogleFonts.outfit(
+        unselectedLabelStyle: GoogleFonts.inter(
           fontSize: 14,
           fontWeight: FontWeight.w400,
         ),
@@ -210,12 +210,12 @@ class AppTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
-        titleTextStyle: GoogleFonts.outfit(
+        titleTextStyle: GoogleFonts.inter(
           fontSize: 17,
           fontWeight: FontWeight.w600,
           color: AppColors.darkGrey,
         ),
-        contentTextStyle: GoogleFonts.outfit(
+        contentTextStyle: GoogleFonts.inter(
           fontSize: 14,
           fontWeight: FontWeight.w400,
           color: AppColors.darkGrey,

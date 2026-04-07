@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/localization/app_localizations.dart';
 import '../../../home/presentation/pages/property_details_page.dart';
@@ -24,7 +24,7 @@ class _PropertiesPageState extends State<PropertiesPage> {
     return [l10n.all, l10n.villa, l10n.apartment, l10n.townhouse];
   }
 
-  List<String> _filterValues = ['', 'VILLA', 'APARTMENT', 'TOWNHOUSE'];
+  final List<String> _filterValues = ['', 'VILLA', 'APARTMENT', 'TOWNHOUSE'];
 
   @override
   void initState() {
@@ -37,7 +37,6 @@ class _PropertiesPageState extends State<PropertiesPage> {
       _isLoading = true;
       _error = null;
     });
-
     try {
       final propertyType = _filterValues[_selectedFilter];
       final properties = await PropertiesService.getMyProperties(
@@ -52,7 +51,6 @@ class _PropertiesPageState extends State<PropertiesPage> {
         _error = e.toString();
         _isLoading = false;
       });
-      print('Error fetching properties: $e');
     }
   }
 
@@ -61,40 +59,64 @@ class _PropertiesPageState extends State<PropertiesPage> {
     _fetchProperties();
   }
 
+  // ── Design system colors (from DESIGN.md / code.html) ──
+  static const Color _surface = Color(0xFFF9F9F8);
+  static const Color _surfaceContainer = Color(0xFFEDEEED);
+  static const Color _surfaceContainerHigh = Color(0xFFE7E8E7);
+  static const Color _surfaceContainerLowest = Color(0xFFFFFFFF);
+  static const Color _primaryContainer = Color(0xFF1A3C34);
+  static const Color _primary = Color(0xFF01261F);
+  static const Color _onPrimary = Color(0xFFFFFFFF);
+  static const Color _onSurface = Color(0xFF191C1C);
+  static const Color _onSurfaceVariant = Color(0xFF414846);
+  static const Color _outline = Color(0xFF717976);
+  static const Color _outlineVariant = Color(0xFFC1C8C4);
+  static const Color _surfaceVariant = Color(0xFFE1E3E2);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: _surface,
       body: SafeArea(
         child: _isLoading
             ? const Center(
-                child: CircularProgressIndicator(color: AppColors.primaryGreen))
+                child:
+                    CircularProgressIndicator(color: AppColors.primaryGreen))
             : _error != null
                 ? Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.error_outline,
-                            size: 48, color: Colors.red),
+                        Icon(Icons.error_outline,
+                            size: 48, color: _outline.withValues(alpha: 0.6)),
                         const SizedBox(height: 16),
-                        Text('Error: $_error'),
+                        Text('Error: $_error',
+                            style: const TextStyle(color: _onSurface)),
                         const SizedBox(height: 16),
                         ElevatedButton(
                           onPressed: _fetchProperties,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: _primaryContainer,
+                            foregroundColor: _onPrimary,
+                            shape: const StadiumBorder(),
+                          ),
                           child: const Text('Retry'),
                         ),
                       ],
                     ),
                   )
                 : SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildHeader(context),
+                        const SizedBox(height: 32),
                         _buildQuickStats(context),
+                        const SizedBox(height: 32),
                         _buildFilterChips(),
-                        _buildPropertyList(context),
                         const SizedBox(height: 24),
+                        _buildPropertyList(context),
                       ],
                     ),
                   ),
@@ -106,34 +128,44 @@ class _PropertiesPageState extends State<PropertiesPage> {
 
   Widget _buildHeader(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                l10n.myProperties,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.black,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                '${_properties.length} ${l10n.propertiesOwned}',
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Color(0xFF8A8A8A),
-                ),
-              ),
-            ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n.myProperties,
+          style: const TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 32,
+            fontWeight: FontWeight.w700,
+            color: _primary,
+            height: 1.15,
           ),
-        ],
-      ),
+        ),
+        const SizedBox(height: 6),
+        Row(
+          children: [
+            Container(
+              width: 8,
+              height: 8,
+              decoration: const BoxDecoration(
+                color: _primaryContainer,
+                shape: BoxShape.circle,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              '${_properties.length} ${_properties.length == 1 ? 'Property' : 'Properties'} owned',
+              style: const TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: _onSurfaceVariant,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -146,149 +178,147 @@ class _PropertiesPageState extends State<PropertiesPage> {
         _properties.where((p) => p.status == 'UNDER_CONSTRUCTION').length;
     final ready = _properties.where((p) => p.status == 'READY').length;
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-      child: Row(
-        children: [
-          _buildStatCard(
-            icon: Icons.apartment,
-            iconBg: const Color(0xFFE8F5E9),
-            iconColor: AppColors.primaryGreen,
-            value: '$total',
-            label: l10n.total,
-          ),
-          const SizedBox(width: 12),
-          _buildStatCard(
-            icon: Icons.construction,
-            iconBg: const Color(0xFFFFF8E1),
-            iconColor: AppColors.gold,
-            value: '$building',
-            label: l10n.building,
-          ),
-          const SizedBox(width: 12),
-          _buildStatCard(
-            icon: Icons.check_circle_outline,
-            iconBg: const Color(0xFFE8F5E9),
-            iconColor: AppColors.success,
-            value: '$ready',
-            label: l10n.ready,
-          ),
-        ],
-      ),
+    return Column(
+      children: [
+        // Portfolio Total
+        _buildStatCard(
+          value: total.toString().padLeft(2, '0'),
+          label: 'Active Assets',
+          headerLabel: 'PORTFOLIO TOTAL',
+          bgColor: _surfaceContainerLowest,
+        ),
+        const SizedBox(height: 12),
+        // In Development — with left accent border
+        _buildStatCard(
+          value: building.toString().padLeft(2, '0'),
+          label: l10n.building,
+          headerLabel: 'IN DEVELOPMENT',
+          bgColor: _surfaceContainer,
+          leftBorderColor: _primaryContainer,
+          headerColor: _primaryContainer,
+          valueColor: _primaryContainer,
+        ),
+        const SizedBox(height: 12),
+        // Ready to Move
+        _buildStatCard(
+          value: ready.toString().padLeft(2, '0'),
+          label: 'Completed',
+          headerLabel: 'READY TO MOVE',
+          bgColor: _surfaceContainerLowest,
+          valueColor: _outline,
+        ),
+      ],
     );
   }
 
   Widget _buildStatCard({
-    required IconData icon,
-    required Color iconBg,
-    required Color iconColor,
     required String value,
     required String label,
+    required String headerLabel,
+    required Color bgColor,
+    Color? leftBorderColor,
+    Color? headerColor,
+    Color? valueColor,
   }) {
-    return Expanded(
+    return Container(
+      width: double.infinity,
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.circular(14),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          border: leftBorderColor != null
+              ? Border(left: BorderSide(color: leftBorderColor, width: 4))
+              : null,
         ),
-        child: Column(
-          children: [
-            Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                color: iconBg,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(icon, color: iconColor, size: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            headerLabel,
+            style: TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 10,
+              fontWeight: FontWeight.w700,
+              color: headerColor ?? _onSurfaceVariant,
+              letterSpacing: 1.5,
             ),
-            const SizedBox(height: 10),
-            Text(
-              value,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: AppColors.black,
+          ),
+          const SizedBox(height: 6),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Text(
+                value,
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 30,
+                  fontWeight: FontWeight.w700,
+                  color: valueColor ?? _primary,
+                  height: 1.0,
+                ),
               ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 12,
-                color: AppColors.darkGrey.withValues(alpha: 0.6),
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: _onSurfaceVariant,
+                ),
               ),
-            ),
-          ],
-        ),
+            ],
+          ),
+        ],
+      ),
       ),
     );
   }
-
   // ──────────────────────────── FILTERS ─────────────────────────────
 
   Widget _buildFilterChips() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 20, 0, 4),
-      child: SizedBox(
-        height: 38,
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: _filters(context).length,
-          itemBuilder: (context, index) {
-            final isSelected = _selectedFilter == index;
-            return Padding(
-              padding: const EdgeInsets.only(right: 10),
-              child: GestureDetector(
-                onTap: () => _onFilterChanged(index),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: isSelected
-                        ? AppColors.primaryGreen
-                        : AppColors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: isSelected
-                          ? AppColors.primaryGreen
-                          : AppColors.lightGrey,
-                      width: 1.2,
-                    ),
-                    boxShadow: isSelected
-                        ? [
-                            BoxShadow(
-                              color:
-                                  AppColors.primaryGreen.withValues(alpha: 0.25),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ]
-                        : null,
-                  ),
+    return SizedBox(
+      height: 44,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: _filters(context).length,
+        itemBuilder: (context, index) {
+          final isSelected = _selectedFilter == index;
+          return Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: GestureDetector(
+              onTap: () => _onFilterChanged(index),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 28, vertical: 10),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? _primaryContainer
+                      : _surfaceContainerHigh,
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                child: Center(
                   child: Text(
-                    _filters(context)[index],
+                    _filters(context)[index].toUpperCase(),
                     style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color:
-                          isSelected ? AppColors.white : AppColors.darkGrey,
+                      fontFamily: 'Inter',
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1.5,
+                      color: isSelected ? _onPrimary : _onSurface,
                     ),
                   ),
                 ),
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -297,30 +327,35 @@ class _PropertiesPageState extends State<PropertiesPage> {
 
   Widget _buildPropertyList(BuildContext context) {
     if (_properties.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.all(40),
+      return Padding(
+        padding: const EdgeInsets.all(48),
         child: Center(
-          child: Text(
-            'No properties found',
-            style: TextStyle(
-              fontSize: 16,
-              color: AppColors.lightGrey,
-            ),
+          child: Column(
+            children: [
+              Icon(Icons.apartment_outlined,
+                  size: 48, color: _onSurface.withValues(alpha: 0.2)),
+              const SizedBox(height: 16),
+              Text(
+                'No properties found',
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 16,
+                  color: _onSurface.withValues(alpha: 0.4),
+                ),
+              ),
+            ],
           ),
         ),
       );
     }
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-      child: Column(
-        children: _properties
-            .map((property) => Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: _buildPropertyCardFromData(property, context),
-                ))
-            .toList(),
-      ),
+    return Column(
+      children: _properties
+          .map((property) => Padding(
+                padding: const EdgeInsets.only(bottom: 32),
+                child: _buildPropertyCardFromData(property, context),
+              ))
+          .toList(),
     );
   }
 
@@ -328,13 +363,12 @@ class _PropertiesPageState extends State<PropertiesPage> {
       PropertyModel property, BuildContext context) {
     final l10n = AppLocalizations.of(context);
 
-    // Map status
     String statusLabel;
     Color statusColor;
     switch (property.status) {
       case 'UNDER_CONSTRUCTION':
         statusLabel = l10n.underConstruction;
-        statusColor = AppColors.gold;
+        statusColor = _primaryContainer;
         break;
       case 'READY':
         statusLabel = l10n.ready;
@@ -342,14 +376,13 @@ class _PropertiesPageState extends State<PropertiesPage> {
         break;
       case 'HANDOVER_COMPLETE':
         statusLabel = 'Handover Complete';
-        statusColor = AppColors.primaryGreen;
+        statusColor = _primaryContainer;
         break;
       default:
         statusLabel = property.status;
-        statusColor = AppColors.lightGrey;
+        statusColor = _outline;
     }
 
-    // Map property type
     String typeLabel;
     switch (property.propertyType) {
       case 'VILLA':
@@ -371,8 +404,7 @@ class _PropertiesPageState extends State<PropertiesPage> {
     return _buildPropertyCard(
       propertyId: property.id,
       propertyModel: property,
-      imageAsset: property.imageUrl ??
-          'assets/images/sukoon_by_sanzen.png', // fallback
+      imageAsset: property.imageUrl ?? 'assets/images/zen_lagoons_villa.png',
       unitBadge: property.unitCode ?? 'UNIT',
       name: property.name,
       location: property.location,
@@ -383,6 +415,7 @@ class _PropertiesPageState extends State<PropertiesPage> {
       statusColor: statusColor,
       progress: property.completionPercentage / 100,
       progressLabel: '${property.completionPercentage.toInt()}%',
+      estimatedCompletion: property.estimatedCompletion,
       context: context,
     );
   }
@@ -401,212 +434,233 @@ class _PropertiesPageState extends State<PropertiesPage> {
     required Color statusColor,
     required double? progress,
     required String? progressLabel,
+    String? estimatedCompletion,
     required BuildContext context,
   }) {
     final l10n = AppLocalizations.of(context);
+
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(16),
+        color: _surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 14,
-            offset: const Offset(0, 4),
+            color: _onSurface.withValues(alpha: 0.05),
+            blurRadius: 16,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
+      clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Image section ──
-          ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(16),
-              topRight: Radius.circular(16),
-            ),
-            child: SizedBox(
-              height: 180,
-              width: double.infinity,
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  imageAsset.startsWith('http')
-                      ? Image.network(imageAsset, fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            decoration: const BoxDecoration(
-                              gradient: AppColors.luxuryGradient,
+          // ── Hero Image ──
+          SizedBox(
+            height: 240,
+            width: double.infinity,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                imageAsset.startsWith('http')
+                    ? Image.network(imageAsset, fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) {
+                        return Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [_primary, _primaryContainer],
                             ),
-                            child: const Icon(Icons.apartment,
-                                size: 50, color: AppColors.white),
-                          );
-                        })
-                      : Image.asset(imageAsset, fit: BoxFit.cover),
-                  // Luxurious gradient overlay
-                  Positioned.fill(
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.black.withValues(alpha: 0.1),
-                            Colors.black.withValues(alpha: 0.75),
-                          ],
-                          stops: const [0.4, 1.0],
+                          ),
+                          child: const Icon(Icons.apartment,
+                              size: 50, color: _onPrimary),
+                        );
+                      })
+                    : Image.asset(imageAsset, fit: BoxFit.cover),
+                // Badges
+                Positioned(
+                  top: 16,
+                  left: 16,
+                  child: Row(
+                    children: [
+                      // Status pill — glass effect
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 7),
+                        decoration: BoxDecoration(
+                          color: statusColor.withValues(alpha: 0.9),
+                          borderRadius: BorderRadius.circular(50),
                         ),
-                      ),
-                    ),
-                  ),
-                  // Unit badge
-                  Positioned(
-                    top: 14,
-                    left: 14,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: AppColors.primaryGreen,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        unitBadge,
-                        style: const TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.white,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                    ),
-                  ),
-                  // Status badge
-                  Positioned(
-                    top: 14,
-                    right: 14,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: statusColor.withValues(alpha: 0.9),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        status,
-                        style: const TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.white,
-                          letterSpacing: 0.3,
-                        ),
-                      ),
-                    ),
-                  ),
-                  // Name + Location
-                  Positioned(
-                    bottom: 14,
-                    left: 14,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          name,
+                        child: Text(
+                          status.toUpperCase(),
                           style: const TextStyle(
-                            fontSize: 19,
+                            fontFamily: 'Inter',
+                            fontSize: 10,
                             fontWeight: FontWeight.w700,
-                            color: AppColors.white,
+                            color: _onPrimary,
+                            letterSpacing: 1.2,
                           ),
                         ),
-                        const SizedBox(height: 2),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.location_on,
-                              size: 14,
-                              color: AppColors.white.withValues(alpha: 0.85),
-                            ),
-                            const SizedBox(width: 3),
-                            Text(
-                              location,
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: AppColors.white.withValues(alpha: 0.85),
-                              ),
-                            ),
-                          ],
+                      ),
+                      const SizedBox(width: 8),
+                      // Unit ID pill — white glass
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 7),
+                        decoration: BoxDecoration(
+                          color: _surfaceContainerLowest.withValues(alpha: 0.9),
+                          borderRadius: BorderRadius.circular(50),
                         ),
-                      ],
-                    ),
+                        child: Text(
+                          'UNIT ID: $unitBadge',
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700,
+                            color: _primaryContainer,
+                            letterSpacing: 1.0,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
 
-          // ── Details section ──
+          // ── Content Section ──
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
+            padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Property specs row
+                // Name + more button
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        name,
+                        style: const TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 24,
+                          fontWeight: FontWeight.w700,
+                          color: _primary,
+                          height: 1.2,
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      child: Padding(
+                        padding: const EdgeInsets.all(4),
+                        child: Icon(Icons.more_vert,
+                            color: _onSurface.withValues(alpha: 0.4),
+                            size: 22),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+
+                // Location
                 Row(
                   children: [
-                    _buildSpecChip(Icons.home_outlined, type),
-                    const SizedBox(width: 10),
-                    _buildSpecChip(Icons.bed_outlined, bedrooms),
-                    const SizedBox(width: 10),
-                    _buildSpecChip(Icons.square_foot, area),
+                    Icon(Icons.location_on,
+                        size: 14, color: _onSurfaceVariant),
+                    const SizedBox(width: 3),
+                    Text(
+                      location,
+                      style: const TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: _onSurfaceVariant,
+                        letterSpacing: 0.3,
+                      ),
+                    ),
                   ],
                 ),
 
-                // Progress bar (conditional)
+                const SizedBox(height: 24),
+
+                // Details Grid — 2x2
+                Row(
+                  children: [
+                    Expanded(child: _buildSpecItem('TYPE', type)),
+                    Expanded(child: _buildSpecItem('BEDROOMS', bedrooms)),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Expanded(child: _buildSpecItem('AREA', area)),
+                    Expanded(
+                        child: _buildSpecItem(
+                            'COMPLETION', estimatedCompletion ?? '—')),
+                  ],
+                ),
+
+                // Progress
                 if (progress != null && progress > 0) ...[
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 28),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        l10n.constructionProgress,
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.darkGrey.withValues(alpha: 0.7),
+                        l10n.constructionProgress.toUpperCase(),
+                        style: const TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: _primaryContainer,
+                          letterSpacing: 1.0,
                         ),
                       ),
                       Text(
                         progressLabel ?? '',
                         style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.primaryGreen,
+                          fontFamily: 'Inter',
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: _primaryContainer,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 10),
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(6),
+                    borderRadius: BorderRadius.circular(50),
                     child: LinearProgressIndicator(
                       value: progress,
                       minHeight: 6,
-                      backgroundColor:
-                          AppColors.lightGrey.withValues(alpha: 0.5),
+                      backgroundColor: _surfaceVariant,
                       valueColor: const AlwaysStoppedAnimation<Color>(
-                        AppColors.primaryGreen,
-                      ),
+                          _primaryContainer),
                     ),
                   ),
+                  if (propertyModel?.currentPhase != null) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      _formatPhase(propertyModel!.currentPhase!),
+                      style: const TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 11,
+                        fontStyle: FontStyle.italic,
+                        color: _onSurfaceVariant,
+                      ),
+                    ),
+                  ],
                 ],
 
-                const SizedBox(height: 14),
+                const SizedBox(height: 32),
 
-                // Action row
+                // Action buttons
                 Row(
                   children: [
                     Expanded(
                       child: SizedBox(
-                        height: 40,
+                        height: 52,
                         child: ElevatedButton(
                           onPressed: () {
                             Navigator.push(
@@ -625,49 +679,39 @@ class _PropertiesPageState extends State<PropertiesPage> {
                                   progress: progress,
                                   imageAsset: imageAsset,
                                   currentPhase: propertyModel?.currentPhase,
-                                  estimatedCompletion: propertyModel?.estimatedCompletion,
+                                  estimatedCompletion:
+                                      propertyModel?.estimatedCompletion,
                                   floor: propertyModel?.floor,
                                   parking: propertyModel?.parking,
                                   balcony: propertyModel?.balcony,
-                                  furnishedStatus: propertyModel?.furnishedStatus,
+                                  furnishedStatus:
+                                      propertyModel?.furnishedStatus,
                                   amenities: propertyModel?.amenities ?? [],
                                   downPayment: propertyModel?.downPayment,
-                                  constructionPayment: propertyModel?.constructionPayment,
-                                  handoverPayment: propertyModel?.handoverPayment,
+                                  constructionPayment:
+                                      propertyModel?.constructionPayment,
+                                  handoverPayment:
+                                      propertyModel?.handoverPayment,
                                 ),
                               ),
                             );
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primaryGreen,
-                            foregroundColor: AppColors.white,
+                            backgroundColor: _primaryContainer,
+                            foregroundColor: _onPrimary,
                             elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
+                            shape: const StadiumBorder(),
                           ),
                           child: Text(
-                            l10n.viewDetails,
+                            l10n.viewDetails.toUpperCase(),
                             style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
+                              fontFamily: 'Inter',
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 2.0,
                             ),
                           ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE8F5E9),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Icon(
-                        Icons.more_horiz,
-                        color: AppColors.primaryGreen,
-                        size: 22,
                       ),
                     ),
                   ],
@@ -680,32 +724,41 @@ class _PropertiesPageState extends State<PropertiesPage> {
     );
   }
 
-  Widget _buildSpecChip(IconData icon, String label) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF5F5F5),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            size: 15,
-            color: AppColors.darkGrey.withValues(alpha: 0.6),
+  Widget _buildSpecItem(String label, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 10,
+            fontWeight: FontWeight.w600,
+            color: _outline,
+            letterSpacing: 1.5,
           ),
-          const SizedBox(width: 5),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: AppColors.darkGrey.withValues(alpha: 0.8),
-            ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: const TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: _onSurface,
           ),
-        ],
-      ),
+        ),
+      ],
     );
+  }
+
+  String _formatPhase(String phase) {
+    return phase
+        .replaceAll('_', ' ')
+        .toLowerCase()
+        .split(' ')
+        .map((w) =>
+            w.isNotEmpty ? '${w[0].toUpperCase()}${w.substring(1)}' : w)
+        .join(' ');
   }
 }

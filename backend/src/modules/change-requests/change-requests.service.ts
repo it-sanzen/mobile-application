@@ -101,7 +101,7 @@ export class ChangeRequestsService {
         });
 
         // Notify user about status change
-        const statusText = dto.status === 'APPROVED' ? 'approved' : dto.status === 'REJECTED' ? 'rejected' : 'updated';
+        const statusText = dto.status === 'APPROVED' ? 'approved' : dto.status === 'REJECTED' ? 'rejected' : dto.status === 'COMPLETED' ? 'completed' : 'updated';
         await this.notifications.createNotification({
             userId: request.userId,
             title: `Change Request ${statusText}`,

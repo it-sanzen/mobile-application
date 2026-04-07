@@ -41,7 +41,8 @@ enum ChangeRequestStatus {
   submitted('SUBMITTED'),
   underReview('UNDER_REVIEW'),
   approved('APPROVED'),
-  rejected('REJECTED');
+  rejected('REJECTED'),
+  completed('COMPLETED');
 
   final String value;
   const ChangeRequestStatus(this.value);
@@ -56,6 +57,8 @@ enum ChangeRequestStatus {
         return 'Approved';
       case ChangeRequestStatus.rejected:
         return 'Rejected';
+      case ChangeRequestStatus.completed:
+        return 'Completed';
     }
   }
 

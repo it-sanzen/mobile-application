@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_colors.dart';
 import 'documents_page.dart';
 import '../../../properties/presentation/pages/properties_page.dart';
@@ -148,10 +149,19 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const Text(
+                'Welcome back,',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w300,
+                  color: AppColors.darkGrey,
+                ),
+              ),
+              const SizedBox(height: 4),
               Text(
                 _userName,
                 style: const TextStyle(
-                  fontSize: 24,
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: AppColors.black,
                 ),

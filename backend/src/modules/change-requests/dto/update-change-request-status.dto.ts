@@ -5,6 +5,7 @@ export enum ChangeRequestStatusDto {
     UNDER_REVIEW = 'UNDER_REVIEW',
     APPROVED = 'APPROVED',
     REJECTED = 'REJECTED',
+    COMPLETED = 'COMPLETED',
 }
 
 export class UpdateChangeRequestStatusDto {

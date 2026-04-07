@@ -398,6 +398,7 @@ enum ChangeRequestStatus {
   UNDER_REVIEW
   APPROVED
   REJECTED
+  COMPLETED
 }
 
 model ChangeRequest {
